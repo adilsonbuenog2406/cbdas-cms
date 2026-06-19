@@ -8,7 +8,7 @@
     "build": "npm run clean && vite build && node scripts/build-single.js",
     "build:single": "node scripts/build-single.js",
     "preview": "vite preview",
-    "clean": "rm -rf dist",
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
     "lint": "tsc --noEmit"
   },
   "dependencies": {

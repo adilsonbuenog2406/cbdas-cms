@@ -4,11 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --port 5173 --host 127.0.0.1 --strictPort",
+    "dev": "node scripts/dev.mjs",
     "build": "npm run clean && vite build && node scripts/build-single.js",
     "build:single": "node scripts/build-single.js",
     "preview": "vite preview",
-    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
+    "clean": "node scripts/clean-dist.mjs",
     "lint": "tsc --noEmit"
   },
   "dependencies": {
@@ -29,6 +29,7 @@
     "@tailwindcss/vite": "^4.1.14",
     "@types/node": "^22.14.0",
     "@vitejs/plugin-react": "^5.0.4",
+    "@vitejs/plugin-react-swc": "^3.11.0",
     "autoprefixer": "^10.4.21",
     "tailwindcss": "^4.1.14",
     "typescript": "~5.8.2",

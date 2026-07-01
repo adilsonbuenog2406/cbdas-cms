@@ -287,26 +287,9 @@ export const eventData = {
     closingNotice: "Encerramento das inscrições no dia 18/08/2026.",
     batches: [
       {
-        id: "batch1",
-        name: "Lote 1",
-        status: "active", // active, upcoming, closed
-        period: "28/04 até 30/06",
-        prices: [
-          { label: "Público Geral", value: "R$ 1.100,00" },
-          { label: "Associados", value: "R$ 550,00" },
-          { label: "Estudantes", value: "R$ 300,00" },
-          { label: "Pós-Graduação", value: "R$ 800,00" },
-          { label: "Grupo (10-19)", value: "R$ 990,00" },
-          { label: "Grupo (20-29)", value: "R$ 880,00" },
-          { label: "Grupo (30-39)", value: "R$ 770,00" },
-          { label: "Grupo (40-49)", value: "R$ 660,00" },
-          { label: "Grupo (50+)", value: "R$ 550,00" }
-        ]
-      },
-      {
         id: "batch2",
         name: "Lote 2",
-        status: "upcoming",
+        status: "active",
         period: "01/07 a 01/08",
         prices: [
           { label: "Público Geral", value: "R$ 1.300,00" },

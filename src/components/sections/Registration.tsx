@@ -34,9 +34,8 @@ export const Registration = () => {
       <div className="container relative z-10 mx-auto px-4 md:px-6 lg:px-8">
         <SectionTitle title="Inscrições" subtitle="Garanta sua participação" light centered />
 
-        {/* Largura limitada + mx-auto centraliza o bloco; grid com 3 colunas no desktop evita coluna “fantasma” (era lg:grid-cols-4 com só 3 cards). */}
-        <div className="relative z-10 mx-auto mt-2 w-full max-w-6xl">
-          <div className="grid w-full grid-cols-1 justify-items-stretch gap-6 md:grid-cols-2 md:gap-6 md:max-lg:[&>*:nth-child(3)]:col-span-2 md:max-lg:[&>*:nth-child(3)]:w-full md:max-lg:[&>*:nth-child(3)]:max-w-md md:max-lg:[&>*:nth-child(3)]:justify-self-center lg:grid-cols-3 lg:gap-6">
+        <div className="relative z-10 mx-auto mt-2 w-full max-w-4xl">
+          <div className="grid w-full grid-cols-1 justify-items-stretch gap-6 md:grid-cols-2">
             {eventData.registration.batches.map((batch, index) => {
               const isActive = batch.status === 'active';
               const isUpcoming = batch.status === 'upcoming';

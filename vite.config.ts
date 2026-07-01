@@ -1,16 +1,63 @@
-import tailwindcss from '@tailwindcss/vite';
-import react from '@vitejs/plugin-react';
+import react from '@vitejs/plugin-react-swc';
 import path from 'path';
 import { defineConfig, loadEnv, type PluginOption } from 'vite';
 
-export default defineConfig(({ mode }) => {
+const LOG_ENDPOINT =
+  'http://127.0.0.1:7615/ingest/e1503208-6096-42e6-82f7-77583d7d4b9e';
+const SESSION_ID = '254193';
+
+// #region agent log
+function debugLog(
+  hypothesisId: string,
+  location: string,
+  message: string,
+  data: Record<string, unknown> = {},
+  runId = 'pre-fix',
+) {
+  fetch(LOG_ENDPOINT, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Debug-Session-Id': SESSION_ID,
+    },
+    body: JSON.stringify({
+      sessionId: SESSION_ID,
+      runId,
+      hypothesisId,
+      location,
+      message,
+      data,
+      timestamp: Date.now(),
+    }),
+  }).catch(() => {});
+}
+// #endregion
+
+export default defineConfig(async ({ mode }) => {
   const env = loadEnv(mode, '.', '');
   const isProduction = mode === 'production';
 
+  // #region agent log
+  debugLog('A', 'vite.config.ts:entry', 'config loading', { mode, isProduction });
+  // #endregion
+
   const plugins: PluginOption[] = [react()];
-  if (isProduction) {
-    plugins.push(tailwindcss());
-  }
+
+  // #region agent log
+  debugLog('H', 'vite.config.ts:tailwind-import', 'loading tailwind plugin', { mode });
+  // #endregion
+
+  const { default: tailwindcss } = await import('@tailwindcss/vite');
+  plugins.push(tailwindcss());
+
+  // #region agent log
+  debugLog('C', 'vite.config.ts:ready', 'config resolved', {
+    mode,
+    pluginCount: plugins.length,
+    serverPort: 5173,
+    serverHost: '127.0.0.1',
+  });
+  // #endregion
 
   return {
     base: isProduction ? env.VITE_BASE_PATH || './' : '/',

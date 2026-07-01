@@ -183,16 +183,17 @@ const speakerCatalog = [
     role: 'Doutorando em Direito/Procurador Federal - AGU',
   },
   {
+    name: 'Carmen Lúcia',
+    role: 'Ministra do STF',
+    imagePosition: '34% top',
+  },
+  {
     name: 'Christianne de Carvalho Stroppa',
     role: 'Professora Doutora e Mestre pela PUC/SP',
   },
   {
     name: 'Claudia Braga Tomelin',
     role: 'Secretária Geral do Ministério Público do Distrito Federal e Territórios',
-  },
-  {
-    name: 'Daiesse Quênia Jaala Santos Bomfim',
-    role: 'Chefe de Auditoria de Licitações e Contratos na Advocacia-Geral da União',
   },
   {
     name: 'Daniel Martins e Avelar',
@@ -442,6 +443,7 @@ const preferredPhotoFileNameBySpeaker = new Map<string, string>([
   ['Ana Frazão', 'draanafrazao.png'],
   ['Claudia Braga Tomelin', 'claudiabragatomelin.png'],
   ['Antonio Rodrigo Machado', 'Antonio Rodrigo Machado.png'],
+  ['Carmen Lúcia', 'foto-diego-bresani---minist.webp'],
   ['Christianne de Carvalho Stroppa', 'Christianne de Carvalho Stroppa.png'],
   ['Cristiana Fortini', 'Cristiana Fortini.png'],
   ['Gustavo Henrique Justino de Oliveira', '06808AEB-A1E6-4E2C-9BE2-A24B66F88C27 - Gustavo Henrique Justino de Oliveira.jpeg'],

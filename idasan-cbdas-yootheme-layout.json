@@ -13,11 +13,7 @@
         "class": "cbdas-landing cbdas-hero-section",
         "style": "primary",
         "width": "default",
-        "padding": "none",
-        "image": "images/cbdas/elementosbrasilia2.png",
-        "image_position": "center-center",
-        "image_size": "cover",
-        "image_effect": "fixed"
+        "padding": "none"
       },
       "children": [
         {

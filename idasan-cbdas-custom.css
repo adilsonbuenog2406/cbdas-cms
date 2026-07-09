@@ -18,20 +18,33 @@
   position: relative;
   min-height: 100vh;
   overflow: hidden;
+  background-color: var(--cbdas-navy-950) !important;
+  background-image:
+    radial-gradient(circle at 16% 22%, rgba(16, 36, 95, 0.34) 0%, transparent 36%),
+    radial-gradient(circle at 84% 18%, rgba(12, 31, 82, 0.22) 0%, transparent 28%),
+    linear-gradient(135deg, var(--cbdas-navy-950) 0%, #08122f 30%, #0b2246 58%, var(--cbdas-navy-900) 100%) !important;
   background:
     radial-gradient(circle at 16% 22%, rgba(16, 36, 95, 0.34) 0%, transparent 36%),
     radial-gradient(circle at 84% 18%, rgba(12, 31, 82, 0.22) 0%, transparent 28%),
     linear-gradient(135deg, var(--cbdas-navy-950) 0%, #08122f 30%, #0b2246 58%, var(--cbdas-navy-900) 100%) !important;
 }
 
+.cbdas-landing.cbdas-hero-section > .uk-background-cover,
+.cbdas-landing.cbdas-hero-section > .uk-position-cover[style*="background-image"] {
+  display: none !important;
+}
+
 .cbdas-landing.cbdas-hero-section::before {
   position: absolute;
   inset: 0;
   content: "";
-  background: inherit;
-  filter: grayscale(1) brightness(0.22) contrast(1.08);
+  background:
+    radial-gradient(ellipse at 20% 65%, rgba(173, 216, 255, 0.14) 0%, transparent 42%),
+    radial-gradient(ellipse at 74% 16%, rgba(255, 255, 255, 0.08) 0%, transparent 34%),
+    radial-gradient(ellipse at 54% 100%, rgba(249, 214, 0, 0.08) 0%, transparent 34%);
+  filter: blur(26px);
   mix-blend-mode: screen;
-  opacity: 0.12;
+  opacity: 0.72;
   pointer-events: none;
 }
 
@@ -75,6 +88,7 @@
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.82) !important;
   background: rgba(255, 255, 255, 0.06);
   backdrop-filter: blur(12px);
 }
@@ -93,7 +107,7 @@
 
 .cbdas-landing .cbdas-hero-headline {
   margin: 0;
-  color: #fff;
+  color: #fff !important;
   font-size: clamp(1.45rem, 1rem + 2vw, 2.5rem);
   font-weight: 900;
   line-height: 1.05;
@@ -103,7 +117,7 @@
 .cbdas-landing .cbdas-hero-subtitle {
   max-width: 58rem;
   margin: 1rem auto 2rem;
-  color: rgba(255, 255, 255, 0.76);
+  color: rgba(255, 255, 255, 0.76) !important;
   font-size: clamp(1rem, 0.95rem + 0.34vw, 1.28rem);
   font-weight: 800;
   line-height: 1.35;

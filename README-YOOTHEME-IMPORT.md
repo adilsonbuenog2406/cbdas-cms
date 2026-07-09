@@ -33,7 +33,6 @@ Arquivos que devem existir em `/public_html/images/cbdas/`:
 - `brasilia.jpeg`
 - `centoeonzelogo.png`
 - `diamante.png`
-- `elementosbrasilia2.png`
 - `heroasset.png`
 - `idasanpalcosampa.webp`
 - `idasansampa.webp`

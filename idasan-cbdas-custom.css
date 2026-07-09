@@ -56,18 +56,17 @@
   filter: drop-shadow(0 14px 30px rgba(0, 0, 0, 0.22));
 }
 
-.cbdas-landing .cbdas-meta {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.8rem;
+.cbdas-landing .cbdas-meta-grid {
+  width: min(100%, 34rem);
+  margin-inline: auto;
   margin-bottom: 1.75rem;
   color: rgba(255, 255, 255, 0.82);
 }
 
-.cbdas-landing .cbdas-meta span {
+.cbdas-landing .cbdas-meta-pill {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   min-height: 2.35rem;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 999px;
@@ -176,17 +175,17 @@
   padding-block: 1rem;
 }
 
-.cbdas-landing .cbdas-actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.55rem;
+.cbdas-landing .cbdas-actions-grid {
+  width: min(100%, 1180px);
+  margin-inline: auto;
 }
 
-.cbdas-landing .cbdas-actions a {
+.cbdas-landing .cbdas-action-button,
+.cbdas-landing .cbdas-action-button a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  width: 100%;
   min-height: 2.35rem;
   border: 1px solid rgba(16, 34, 79, 0.16);
   border-radius: 1rem;
@@ -257,13 +256,31 @@
   box-shadow: 0 24px 60px -42px rgba(6, 21, 57, 0.28);
 }
 
-.cbdas-landing .cbdas-schedule-panel {
+.cbdas-landing .cbdas-schedule-days-row {
+  margin-top: 2.5rem;
+}
+
+.cbdas-landing .cbdas-schedule-day-title {
+  color: var(--cbdas-blue);
+  font-size: clamp(1.35rem, 1.12rem + 0.8vw, 2rem);
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.cbdas-landing .cbdas-schedule-event-panel {
   border-left: 4px solid var(--cbdas-blue);
   border-radius: 18px;
   padding: 1.25rem;
-  white-space: pre-line;
   background: #fff;
   box-shadow: 0 18px 50px -38px rgba(6, 21, 57, 0.42);
+}
+
+.cbdas-landing .cbdas-schedule-event-panel .el-title {
+  color: var(--cbdas-blue);
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 .cbdas-landing.cbdas-sponsors-section {
@@ -304,36 +321,103 @@
   color: #cbd5e1;
 }
 
-.cbdas-landing .cbdas-social {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
+.cbdas-landing .cbdas-social-grid {
   margin-top: 1.25rem;
 }
 
-.cbdas-landing .cbdas-social a {
+.cbdas-landing .cbdas-social-button,
+.cbdas-landing .cbdas-social-button a {
   display: inline-flex;
+  justify-content: center;
+  width: 100%;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 999px;
   padding: 0.45rem 0.75rem;
   color: #cbd5e1;
+  background: transparent !important;
+}
+
+.cbdas-landing .cbdas-footer-link-button,
+.cbdas-landing .cbdas-footer-link-button a {
+  display: inline-flex;
+  width: 100%;
+  justify-content: flex-start;
+  min-height: 2rem;
+  padding: 0.25rem 0;
+  color: #cbd5e1 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  text-align: left;
 }
 
 .cbdas-landing .cbdas-developer-logo {
   margin-top: 1rem;
 }
 
-@media (max-width: 960px) {
-  .cbdas-landing .cbdas-meta,
-  .cbdas-landing .cbdas-actions {
-    flex-direction: column;
-    align-items: stretch;
+@media (max-width: 1024px) {
+  .cbdas-landing .cbdas-section-title {
+    font-size: clamp(1.9rem, 1.25rem + 3vw, 3.5rem);
   }
 
-  .cbdas-landing .cbdas-meta span,
-  .cbdas-landing .cbdas-actions a,
+  .cbdas-landing .cbdas-actions-grid {
+    width: min(100%, 48rem);
+  }
+}
+
+@media (max-width: 768px) {
+  .cbdas-landing .cbdas-meta-grid,
+  .cbdas-landing .cbdas-actions-grid,
+  .cbdas-landing .cbdas-social-grid {
+    width: 100%;
+  }
+
+  .cbdas-landing .cbdas-meta-pill,
+  .cbdas-landing .cbdas-action-button,
   .cbdas-landing .cbdas-button {
     width: 100%;
+  }
+
+  .cbdas-landing .cbdas-hero-row {
+    min-height: 100svh;
+    padding-block: 4rem;
+  }
+
+  .cbdas-landing .cbdas-hero-headline {
+    font-size: clamp(1.35rem, 1.1rem + 2vw, 2rem);
+  }
+
+  .cbdas-landing .cbdas-rounded-image,
+  .cbdas-landing .cbdas-rounded-image img,
+  .cbdas-landing .cbdas-sponsor-image,
+  .cbdas-landing .cbdas-sponsor-image img {
+    border-radius: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .cbdas-landing .cbdas-hero-row {
+    padding-block: 3rem;
+  }
+
+  .cbdas-landing .cbdas-section-title {
+    font-size: clamp(1.75rem, 1.35rem + 3vw, 2.4rem);
+  }
+
+  .cbdas-landing .cbdas-button,
+  .cbdas-landing .cbdas-action-button,
+  .cbdas-landing .cbdas-meta-pill {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+  }
+
+  .cbdas-landing .cbdas-fact-panel,
+  .cbdas-landing .cbdas-pricing-panel,
+  .cbdas-landing .cbdas-data-panel,
+  .cbdas-landing .cbdas-location-panel,
+  .cbdas-landing .cbdas-schedule-event-panel {
+    border-radius: 16px;
+    padding: 1rem;
   }
 }
 

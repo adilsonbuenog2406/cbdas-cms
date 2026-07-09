@@ -39,24 +39,45 @@
                   "type": "image",
                   "props": {
                     "image": "images/cbdas/logodark.webp",
-                    "alt": "IDASAN CBDAS",
-                    "width": "180",
-                    "class": "cbdas-hero-logo"
+                    "alt": "IDASAN",
+                    "class": "cbdas-hero-logo",
+                    "width": "180"
                   }
                 },
                 {
-                  "type": "html",
+                  "type": "grid",
                   "props": {
-                    "content": "<div class=\"cbdas-meta\"><span>20 e 21 de agosto</span><span>Brasília - DF</span></div>"
-                  }
+                    "class": "cbdas-meta-grid",
+                    "child_width": "1-2",
+                    "grid_column_gap": "small",
+                    "grid_row_gap": "small"
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "props": {
+                        "content": "20 e 21 de agosto",
+                        "class": "cbdas-meta-pill",
+                        "text_align": "center"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "props": {
+                        "content": "Brasília - DF",
+                        "class": "cbdas-meta-pill",
+                        "text_align": "center"
+                      }
+                    }
+                  ]
                 },
                 {
                   "type": "image",
                   "props": {
                     "image": "images/cbdas/heroasset.png",
                     "alt": "Arte oficial do IIIº CBDAS",
-                    "width": "745",
-                    "class": "cbdas-hero-art"
+                    "class": "cbdas-hero-art",
+                    "width": "745"
                   }
                 },
                 {
@@ -70,16 +91,16 @@
                   "props": {
                     "content": "IIIº Congresso Brasileiro de Direito Administrativo Sancionador",
                     "title_element": "h1",
-                    "text_align": "center",
-                    "class": "cbdas-hero-headline"
+                    "class": "cbdas-hero-headline",
+                    "text_align": "center"
                   }
                 },
                 {
                   "type": "text",
                   "props": {
                     "content": "Em Brasília de 20 a 21 de agosto de 2026",
-                    "text_align": "center",
-                    "class": "cbdas-hero-subtitle"
+                    "class": "cbdas-hero-subtitle",
+                    "text_align": "center"
                   }
                 },
                 {
@@ -89,7 +110,6 @@
                     "link": "https://www.eventweb.com.br/iii_cbdas/home-event/",
                     "link_target": "_blank",
                     "button_style": "primary",
-                    "text_align": "center",
                     "class": "cbdas-button cbdas-button-gold"
                   }
                 },
@@ -169,10 +189,72 @@
               },
               "children": [
                 {
-                  "type": "html",
+                  "type": "grid",
                   "props": {
-                    "content": "<nav class=\"cbdas-actions\" aria-label=\"Acessos rápidos do congresso\"><a href=\"#inscricoes\">Inscrições</a><a href=\"#programacao\">Programação</a><a href=\"https://docs.google.com/forms/d/e/1FAIpQLSczNtrBcQndorRXiGjOzr9X2pCgn4PlsxqT9zxMHquvpoaQHQ/viewform\" target=\"_blank\" rel=\"noopener noreferrer\">Seja um patrocinador</a><a href=\"https://www.eventweb.com.br/iii_cbdas/home-event/\" target=\"_blank\" rel=\"noopener noreferrer\">Submissões de artigos</a><a href=\"https://drive.google.com/drive/u/0/folders/1lP3GMHOVfJF5ooIos8ABXinALEDs-bMv\" target=\"_blank\" rel=\"noopener noreferrer\">Instruções para submissão de artigo</a><a href=\"#empenho\">Instruções para empenho</a></nav>"
-                  }
+                    "class": "cbdas-actions-grid",
+                    "child_width": "1-6",
+                    "grid_column_gap": "small",
+                    "grid_row_gap": "small"
+                  },
+                  "children": [
+                    {
+                      "type": "button",
+                      "props": {
+                        "content": "Inscrições",
+                        "link": "#inscricoes",
+                        "button_style": "default",
+                        "class": "cbdas-action-button"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "props": {
+                        "content": "Programação",
+                        "link": "#programacao",
+                        "button_style": "default",
+                        "class": "cbdas-action-button"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "props": {
+                        "content": "Seja um patrocinador",
+                        "link": "https://docs.google.com/forms/d/e/1FAIpQLSczNtrBcQndorRXiGjOzr9X2pCgn4PlsxqT9zxMHquvpoaQHQ/viewform",
+                        "link_target": "_blank",
+                        "button_style": "default",
+                        "class": "cbdas-action-button"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "props": {
+                        "content": "Submissões de artigos",
+                        "link": "https://www.eventweb.com.br/iii_cbdas/home-event/",
+                        "link_target": "_blank",
+                        "button_style": "default",
+                        "class": "cbdas-action-button"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "props": {
+                        "content": "Instruções para submissão de artigo",
+                        "link": "https://drive.google.com/drive/u/0/folders/1lP3GMHOVfJF5ooIos8ABXinALEDs-bMv",
+                        "link_target": "_blank",
+                        "button_style": "default",
+                        "class": "cbdas-action-button"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "props": {
+                        "content": "Instruções para empenho",
+                        "link": "#empenho",
+                        "button_style": "default",
+                        "class": "cbdas-action-button"
+                      }
+                    }
+                  ]
                 }
               ]
             }
@@ -209,9 +291,9 @@
                   "type": "grid",
                   "props": {
                     "class": "cbdas-image-grid",
+                    "child_width": "1-3",
                     "grid_column_gap": "small",
-                    "grid_row_gap": "small",
-                    "child_width": "1-3"
+                    "grid_row_gap": "small"
                   },
                   "children": [
                     {
@@ -277,7 +359,8 @@
                   "props": {
                     "class": "cbdas-facts-grid",
                     "child_width": "1-2",
-                    "grid_column_gap": "small"
+                    "grid_column_gap": "small",
+                    "grid_row_gap": "small"
                   },
                   "children": [
                     {
@@ -332,8 +415,8 @@
                   "props": {
                     "content": "Agenda Completa",
                     "title_element": "h3",
-                    "text_align": "center",
-                    "class": "cbdas-eyebrow"
+                    "class": "cbdas-eyebrow",
+                    "text_align": "center"
                   }
                 },
                 {
@@ -341,34 +424,223 @@
                   "props": {
                     "content": "Programação",
                     "title_element": "h2",
-                    "text_align": "center",
-                    "class": "cbdas-section-title"
+                    "class": "cbdas-section-title",
+                    "text_align": "center"
                   }
                 },
                 {
-                  "type": "grid",
+                  "type": "row",
                   "props": {
-                    "class": "cbdas-schedule-grid",
-                    "child_width": "1-2",
-                    "grid_column_gap": "medium",
-                    "grid_row_gap": "medium"
+                    "layout": "1-2,1-2",
+                    "width": "large",
+                    "class": "cbdas-schedule-days-row"
                   },
                   "children": [
                     {
-                      "type": "panel",
+                      "type": "column",
                       "props": {
-                        "title": "Dia 1 - 20/08",
-                        "content": "08h30 - 09h00 | Credenciamento\n09h00 | Abertura\n09h30 | Conferência de abertura\n10h - 11h15 | Painel 1: Tribunais de Contas, medidas cautelares, dever de ressarcimento e sanções\n11h15 - 12h30 | Painel 2: DAS e a lei de inelegibilidade\n14h15 - 15h30 | Painel 3: Empresas estatais: nuances e questões polêmicas de DAS nos 10 anos de Estatuto\n15h45 - 16h30 | Painel 4: O conflito de interesses na administração pública\n16h30 - 16h50 | Coffee Break\n17h00 - 17h30 | IDASANcast: garantias no processo administrativo sancionador\n17h30 - 18h30 | Conferência especial: Reforma administrativa e responsabilização\n18h30 - 19h | Lançamentos",
-                        "class": "cbdas-schedule-panel"
-                      }
+                        "width": "1-2",
+                        "class": "cbdas-schedule-day-column"
+                      },
+                      "children": [
+                        {
+                          "type": "headline",
+                          "props": {
+                            "content": "Dia 1 - 20/08",
+                            "title_element": "h3",
+                            "class": "cbdas-schedule-day-title"
+                          }
+                        },
+                        {
+                          "type": "grid",
+                          "props": {
+                            "class": "cbdas-schedule-events-grid",
+                            "child_width": "1-1",
+                            "grid_row_gap": "small"
+                          },
+                          "children": [
+                            {
+                              "type": "panel",
+                              "props": {
+                                "title": "08h30 - 09h00",
+                                "content": "Credenciamento",
+                                "class": "cbdas-schedule-event-panel"
+                              }
+                            },
+                            {
+                              "type": "panel",
+                              "props": {
+                                "title": "09h00",
+                                "content": "Abertura",
+                                "class": "cbdas-schedule-event-panel"
+                              }
+                            },
+                            {
+                              "type": "panel",
+                              "props": {
+                                "title": "09h30",
+                                "content": "Conferência de abertura",
+                                "class": "cbdas-schedule-event-panel"
+                              }
+                            },
+                            {
+                              "type": "panel",
+                              "props": {
+                                "title": "10h - 11h15",
+                                "content": "Painel 1: Tribunais de Contas, medidas cautelares, dever de ressarcimento e sanções",
+                                "class": "cbdas-schedule-event-panel"
+                              }
+                            },
+                            {
+                              "type": "panel",
+                              "props": {
+                                "title": "11h15 - 12h30",
+                                "content": "Painel 2: DAS e a lei de inelegibilidade",
+                                "class": "cbdas-schedule-event-panel"
+                              }
+                            },
+                            {
+                              "type": "panel",
+                              "props": {
+                                "title": "14h15 - 15h30",
+                                "content": "Painel 3: Empresas estatais: nuances e questões polêmicas de DAS nos 10 anos de Estatuto",
+                                "class": "cbdas-schedule-event-panel"
+                              }
+                            },
+                            {
+                              "type": "panel",
+                              "props": {
+                                "title": "15h45 - 16h30",
+                                "content": "Painel 4: O conflito de interesses na administração pública: infração e julgamento",
+                                "class": "cbdas-schedule-event-panel"
+                              }
+                            },
+                            {
+                              "type": "panel",
+                              "props": {
+                                "title": "16h30 - 16h50",
+                                "content": "Coffee Break",
+                                "class": "cbdas-schedule-event-panel"
+                              }
+                            },
+                            {
+                              "type": "panel",
+                              "props": {
+                                "title": "17h00 - 17h30",
+                                "content": "IDASANcast: garantias no processo administrativo sancionador",
+                                "class": "cbdas-schedule-event-panel"
+                              }
+                            },
+                            {
+                              "type": "panel",
+                              "props": {
+                                "title": "17h30 - 18h30",
+                                "content": "Conferência especial: Reforma administrativa e responsabilização: gestão por resultados, transformação digital e efeitos no sistema sancionador",
+                                "class": "cbdas-schedule-event-panel"
+                              }
+                            },
+                            {
+                              "type": "panel",
+                              "props": {
+                                "title": "18h30 - 19h",
+                                "content": "Lançamentos",
+                                "class": "cbdas-schedule-event-panel"
+                              }
+                            }
+                          ]
+                        }
+                      ]
                     },
                     {
-                      "type": "panel",
+                      "type": "column",
                       "props": {
-                        "title": "Dia 2 - 21/08",
-                        "content": "9h - 10h15 | Painel 5: O papel do DAS na regulação de serviços públicos e incentivo de conformidade\n10h15 - 11h30 | Painel 6: DAS na CVM e no Banco Central e o controle externo\n11h30 - 12h30 | CILADAS Credibilidade institucional e DAS\n14h30 - 15h45 | Painel 7: Governança e integridade pública\n15h45 - 16h15 | Prêmio IDASAN de Ouro ou Notáveis IDASAN Artigos científicos\n16h15 - 16h30 | Coffee Break\n16h30 - 17h | Conferência especial: Improbidade e DAS\n17h - 18h | Conferência de encerramento: Precisamos falar de uma lei geral de DAS?",
-                        "class": "cbdas-schedule-panel"
-                      }
+                        "width": "1-2",
+                        "class": "cbdas-schedule-day-column"
+                      },
+                      "children": [
+                        {
+                          "type": "headline",
+                          "props": {
+                            "content": "Dia 2 - 21/08",
+                            "title_element": "h3",
+                            "class": "cbdas-schedule-day-title"
+                          }
+                        },
+                        {
+                          "type": "grid",
+                          "props": {
+                            "class": "cbdas-schedule-events-grid",
+                            "child_width": "1-1",
+                            "grid_row_gap": "small"
+                          },
+                          "children": [
+                            {
+                              "type": "panel",
+                              "props": {
+                                "title": "9h - 10h15",
+                                "content": "Painel 5: O papel do DAS na regulação de serviços públicos e incentivo de conformidade",
+                                "class": "cbdas-schedule-event-panel"
+                              }
+                            },
+                            {
+                              "type": "panel",
+                              "props": {
+                                "title": "10h15 - 11h30",
+                                "content": "Painel 6: DAS na CVM e no Banco Central e o controle externo",
+                                "class": "cbdas-schedule-event-panel"
+                              }
+                            },
+                            {
+                              "type": "panel",
+                              "props": {
+                                "title": "11h30 - 12h30",
+                                "content": "CILADAS Credibilidade institucional e DAS: interdependência entre as instâncias e abuso de poder",
+                                "class": "cbdas-schedule-event-panel"
+                              }
+                            },
+                            {
+                              "type": "panel",
+                              "props": {
+                                "title": "14h30 - 15h45",
+                                "content": "Painel 7: Governança e integridade pública: aplicação e impacto na atividade sancionatória",
+                                "class": "cbdas-schedule-event-panel"
+                              }
+                            },
+                            {
+                              "type": "panel",
+                              "props": {
+                                "title": "15h45 - 16h15",
+                                "content": "Prêmio IDASAN de Ouro ou Notáveis IDASAN Artigos científicos",
+                                "class": "cbdas-schedule-event-panel"
+                              }
+                            },
+                            {
+                              "type": "panel",
+                              "props": {
+                                "title": "16h15 - 16h30",
+                                "content": "Coffee Break",
+                                "class": "cbdas-schedule-event-panel"
+                              }
+                            },
+                            {
+                              "type": "panel",
+                              "props": {
+                                "title": "16h30 - 17h",
+                                "content": "Conferência especial: Improbidade e DAS: convergências, prova, prescrição e segurança jurídica",
+                                "class": "cbdas-schedule-event-panel"
+                              }
+                            },
+                            {
+                              "type": "panel",
+                              "props": {
+                                "title": "17h - 18h",
+                                "content": "Conferência de encerramento: Precisamos falar de uma lei geral de DAS? Competências federativas e a realidade de Estados e Municípios Sistematização do DAS",
+                                "class": "cbdas-schedule-event-panel"
+                              }
+                            }
+                          ]
+                        }
+                      ]
                     }
                   ]
                 }
@@ -406,16 +678,16 @@
                   "props": {
                     "content": "Inscrições para Submissões de Artigos",
                     "title_element": "h2",
-                    "text_align": "center",
-                    "class": "cbdas-section-title"
+                    "class": "cbdas-section-title",
+                    "text_align": "center"
                   }
                 },
                 {
                   "type": "text",
                   "props": {
                     "content": "Confira os períodos de inscrição e os benefícios disponíveis para cada etapa.",
-                    "text_align": "center",
-                    "class": "cbdas-body-text cbdas-centered-text"
+                    "class": "cbdas-body-text cbdas-centered-text",
+                    "text_align": "center"
                   }
                 },
                 {
@@ -423,7 +695,8 @@
                   "props": {
                     "class": "cbdas-pricing-grid",
                     "child_width": "1-2",
-                    "grid_column_gap": "medium"
+                    "grid_column_gap": "medium",
+                    "grid_row_gap": "medium"
                   },
                   "children": [
                     {
@@ -451,7 +724,6 @@
                     "link": "https://www.eventweb.com.br/iii_cbdas/home-event/",
                     "link_target": "_blank",
                     "button_style": "primary",
-                    "text_align": "center",
                     "class": "cbdas-button cbdas-button-primary"
                   }
                 }
@@ -497,8 +769,8 @@
                   "props": {
                     "content": "Artigos Científicos",
                     "title_element": "h2",
-                    "text_align": "center",
-                    "class": "cbdas-section-title"
+                    "class": "cbdas-section-title",
+                    "text_align": "center"
                   }
                 },
                 {
@@ -506,16 +778,16 @@
                   "props": {
                     "content": "Submissão de trabalhos para o IIIº CBDAS",
                     "title_element": "h3",
-                    "text_align": "center",
-                    "class": "cbdas-section-subtitle"
+                    "class": "cbdas-section-subtitle",
+                    "text_align": "center"
                   }
                 },
                 {
                   "type": "text",
                   "props": {
                     "content": "Acesse a plataforma de submissões ou consulte as instruções completas para envio de artigos científicos ao IIIº Congresso Brasileiro de Direito Administrativo Sancionador.",
-                    "text_align": "center",
-                    "class": "cbdas-body-text cbdas-centered-text"
+                    "class": "cbdas-body-text cbdas-centered-text",
+                    "text_align": "center"
                   }
                 },
                 {
@@ -598,8 +870,8 @@
                   "props": {
                     "content": "Instruções para Empenho",
                     "title_element": "h2",
-                    "text_align": "center",
-                    "class": "cbdas-section-title"
+                    "class": "cbdas-section-title",
+                    "text_align": "center"
                   }
                 },
                 {
@@ -652,7 +924,6 @@
                     "link": "https://drive.google.com/drive/folders/1x0YD9AyQhk0VHYiWMzZebGnGW8ZOy6bg?usp=sharing",
                     "link_target": "_blank",
                     "button_style": "default",
-                    "text_align": "center",
                     "class": "cbdas-button cbdas-button-secondary"
                   }
                 }
@@ -770,8 +1041,8 @@
                   "props": {
                     "content": "Patrocinadores e Apoiadores",
                     "title_element": "h2",
-                    "text_align": "center",
-                    "class": "cbdas-section-title cbdas-light-title"
+                    "class": "cbdas-section-title cbdas-light-title",
+                    "text_align": "center"
                   }
                 },
                 {
@@ -851,8 +1122,8 @@
                   "props": {
                     "image": "images/cbdas/logodark.webp",
                     "alt": "IIIº CBDAS",
-                    "width": "150",
-                    "class": "cbdas-footer-logo"
+                    "class": "cbdas-footer-logo",
+                    "width": "150"
                   }
                 },
                 {
@@ -863,10 +1134,45 @@
                   }
                 },
                 {
-                  "type": "html",
+                  "type": "grid",
                   "props": {
-                    "content": "<div class=\"cbdas-social\"><a href=\"https://www.instagram.com/insta.idasan/\" target=\"_blank\" rel=\"noopener noreferrer\">Instagram</a><a href=\"https://www.linkedin.com/company/idasan/posts/?feedView=all&viewAsMember=true\" target=\"_blank\" rel=\"noopener noreferrer\">LinkedIn</a><a href=\"https://www.youtube.com/@idasan9159\" target=\"_blank\" rel=\"noopener noreferrer\">YouTube</a></div>"
-                  }
+                    "class": "cbdas-social-grid",
+                    "child_width": "1-3",
+                    "grid_column_gap": "small",
+                    "grid_row_gap": "small"
+                  },
+                  "children": [
+                    {
+                      "type": "button",
+                      "props": {
+                        "content": "Instagram",
+                        "link": "https://www.instagram.com/insta.idasan/",
+                        "link_target": "_blank",
+                        "button_style": "default",
+                        "class": "cbdas-social-button"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "props": {
+                        "content": "LinkedIn",
+                        "link": "https://www.linkedin.com/company/idasan/posts/?feedView=all&viewAsMember=true",
+                        "link_target": "_blank",
+                        "button_style": "default",
+                        "class": "cbdas-social-button"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "props": {
+                        "content": "YouTube",
+                        "link": "https://www.youtube.com/@idasan9159",
+                        "link_target": "_blank",
+                        "button_style": "default",
+                        "class": "cbdas-social-button"
+                      }
+                    }
+                  ]
                 }
               ]
             },
@@ -885,10 +1191,39 @@
                   }
                 },
                 {
-                  "type": "list",
+                  "type": "button",
                   "props": {
-                    "content": "Inscrições\nProgramação\nSubmissão de Artigos\nLocal",
-                    "class": "cbdas-footer-list"
+                    "content": "Inscrições",
+                    "link": "#inscricoes",
+                    "button_style": "default",
+                    "class": "cbdas-footer-link-button"
+                  }
+                },
+                {
+                  "type": "button",
+                  "props": {
+                    "content": "Programação",
+                    "link": "#programacao",
+                    "button_style": "default",
+                    "class": "cbdas-footer-link-button"
+                  }
+                },
+                {
+                  "type": "button",
+                  "props": {
+                    "content": "Submissão de Artigos",
+                    "link": "#artigos-cientificos",
+                    "button_style": "default",
+                    "class": "cbdas-footer-link-button"
+                  }
+                },
+                {
+                  "type": "button",
+                  "props": {
+                    "content": "Local",
+                    "link": "#local",
+                    "button_style": "default",
+                    "class": "cbdas-footer-link-button"
                   }
                 }
               ]
@@ -932,10 +1267,10 @@
                   "props": {
                     "image": "images/cbdas/centoeonzelogo.png",
                     "alt": "centoeonze",
+                    "class": "cbdas-developer-logo",
                     "width": "120",
                     "link": "https://centoeonze.space/",
-                    "link_target": "_blank",
-                    "class": "cbdas-developer-logo"
+                    "link_target": "_blank"
                   }
                 }
               ]

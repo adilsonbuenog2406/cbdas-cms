@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" aria-label="CBDAS">
+  <rect width="24" height="24" rx="6" fill="#061539"/>
+  <path d="M5 17h14v2H5z" fill="#f9d600"/>
+  <path d="M8 15h8l-2-8h-4z" fill="#ffffff"/>
+  <path d="M11 7h2v10h-2z" fill="#f9d600"/>
+</svg>

@@ -1,0 +1,349 @@
+.cbdas-landing {
+  --cbdas-blue: #1c2751;
+  --cbdas-navy-950: #061539;
+  --cbdas-navy-900: #0a1b4d;
+  --cbdas-yellow: #f9d600;
+  --cbdas-white: #fcfcfc;
+  --cbdas-muted: #64748b;
+  --cbdas-shadow: 0 28px 80px -48px rgba(6, 21, 57, 0.58);
+  color: var(--cbdas-blue);
+  font-family: Montserrat, Arial, sans-serif;
+}
+
+.cbdas-landing a {
+  text-decoration: none;
+}
+
+.cbdas-landing.cbdas-hero-section {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 16% 22%, rgba(16, 36, 95, 0.34) 0%, transparent 36%),
+    radial-gradient(circle at 84% 18%, rgba(12, 31, 82, 0.22) 0%, transparent 28%),
+    linear-gradient(135deg, var(--cbdas-navy-950) 0%, #08122f 30%, #0b2246 58%, var(--cbdas-navy-900) 100%) !important;
+}
+
+.cbdas-landing.cbdas-hero-section::before {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background: inherit;
+  filter: grayscale(1) brightness(0.22) contrast(1.08);
+  mix-blend-mode: screen;
+  opacity: 0.12;
+  pointer-events: none;
+}
+
+.cbdas-landing .cbdas-hero-row {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding-block: clamp(5.5rem, 9vw, 8rem);
+}
+
+.cbdas-landing .cbdas-hero-column {
+  max-width: 920px;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.cbdas-landing .cbdas-hero-logo {
+  display: inline-block;
+  margin-bottom: 1.5rem;
+  filter: drop-shadow(0 14px 30px rgba(0, 0, 0, 0.22));
+}
+
+.cbdas-landing .cbdas-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.8rem;
+  margin-bottom: 1.75rem;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.cbdas-landing .cbdas-meta span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.35rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  padding: 0.55rem 1rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px);
+}
+
+.cbdas-landing .cbdas-hero-art img,
+.cbdas-landing .cbdas-hero-art {
+  width: min(100%, 745px);
+  margin-inline: auto;
+}
+
+.cbdas-landing .cbdas-hero-divider {
+  width: 6rem;
+  margin: 1.8rem auto 1.2rem;
+  border-top-color: var(--cbdas-yellow);
+}
+
+.cbdas-landing .cbdas-hero-headline {
+  margin: 0;
+  color: #fff;
+  font-size: clamp(1.45rem, 1rem + 2vw, 2.5rem);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: 0;
+}
+
+.cbdas-landing .cbdas-hero-subtitle {
+  max-width: 58rem;
+  margin: 1rem auto 2rem;
+  color: rgba(255, 255, 255, 0.76);
+  font-size: clamp(1rem, 0.95rem + 0.34vw, 1.28rem);
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.cbdas-landing .cbdas-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  border-radius: 999px;
+  padding: 0.9rem 1.45rem;
+  font-size: 0.79rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: 0.16em;
+  text-align: center;
+  text-transform: uppercase;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, color 0.18s ease;
+}
+
+.cbdas-landing .cbdas-button:hover,
+.cbdas-landing .cbdas-button:focus-visible {
+  transform: translateY(-1px);
+}
+
+.cbdas-landing .cbdas-button-gold,
+.cbdas-landing .cbdas-button-gold a {
+  color: var(--cbdas-navy-950) !important;
+  background: var(--cbdas-yellow) !important;
+  box-shadow: 0 18px 40px -24px rgba(249, 214, 0, 0.9);
+}
+
+.cbdas-landing .cbdas-button-primary,
+.cbdas-landing .cbdas-button-primary a {
+  color: #fff !important;
+  background: var(--cbdas-blue) !important;
+}
+
+.cbdas-landing .cbdas-button-secondary,
+.cbdas-landing .cbdas-button-secondary a {
+  color: var(--cbdas-blue) !important;
+  background: #fff !important;
+  border-color: rgba(28, 39, 81, 0.18) !important;
+}
+
+.cbdas-landing .cbdas-button-outline,
+.cbdas-landing .cbdas-button-outline a {
+  color: #fff !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.24) !important;
+  backdrop-filter: blur(10px);
+}
+
+.cbdas-landing .cbdas-button-outline:hover,
+.cbdas-landing .cbdas-button-outline:focus-visible {
+  color: var(--cbdas-navy-950) !important;
+  background: #fff !important;
+}
+
+.cbdas-landing .cbdas-hero-secondary-row,
+.cbdas-landing .cbdas-two-button-row {
+  max-width: 720px;
+  margin: 1rem auto 0;
+}
+
+.cbdas-landing.cbdas-actions-section {
+  background: var(--cbdas-yellow) !important;
+  padding-block: 1rem;
+}
+
+.cbdas-landing .cbdas-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.55rem;
+}
+
+.cbdas-landing .cbdas-actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.35rem;
+  border: 1px solid rgba(16, 34, 79, 0.16);
+  border-radius: 1rem;
+  padding: 0.65rem 0.95rem;
+  color: #10224f;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-align: center;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.cbdas-landing .cbdas-section-title {
+  color: var(--cbdas-navy-900);
+  font-size: clamp(2.1rem, 1.45rem + 3vw, 4.4rem);
+  font-weight: 900;
+  line-height: 0.98;
+  letter-spacing: 0;
+}
+
+.cbdas-landing .cbdas-light-title {
+  color: #fff;
+}
+
+.cbdas-landing .cbdas-eyebrow {
+  color: #64748b;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.cbdas-landing .cbdas-body-text {
+  color: var(--cbdas-muted);
+  font-size: clamp(1rem, 0.95rem + 0.16vw, 1.08rem);
+  line-height: 1.82;
+}
+
+.cbdas-landing .cbdas-centered-text {
+  max-width: 720px;
+  margin-inline: auto;
+}
+
+.cbdas-landing.cbdas-about-section {
+  background: #fbfaf6 !important;
+}
+
+.cbdas-landing .cbdas-rounded-image,
+.cbdas-landing .cbdas-rounded-image img {
+  overflow: hidden;
+  border-radius: 24px;
+  box-shadow: var(--cbdas-shadow);
+}
+
+.cbdas-landing .cbdas-gallery-main {
+  grid-row: span 2;
+}
+
+.cbdas-landing .cbdas-fact-panel,
+.cbdas-landing .cbdas-pricing-panel,
+.cbdas-landing .cbdas-data-panel,
+.cbdas-landing .cbdas-location-panel {
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 20px;
+  padding: 1.25rem;
+  background: #fff;
+  box-shadow: 0 24px 60px -42px rgba(6, 21, 57, 0.28);
+}
+
+.cbdas-landing .cbdas-schedule-panel {
+  border-left: 4px solid var(--cbdas-blue);
+  border-radius: 18px;
+  padding: 1.25rem;
+  white-space: pre-line;
+  background: #fff;
+  box-shadow: 0 18px 50px -38px rgba(6, 21, 57, 0.42);
+}
+
+.cbdas-landing.cbdas-sponsors-section {
+  background:
+    radial-gradient(circle at 10% 0%, rgba(249, 214, 0, 0.16), transparent 28%),
+    radial-gradient(circle at 90% 22%, rgba(255, 255, 255, 0.08), transparent 30%),
+    linear-gradient(180deg, var(--cbdas-navy-950) 0%, var(--cbdas-navy-900) 48%, #08163f 100%) !important;
+}
+
+.cbdas-landing .cbdas-sponsor-grid {
+  max-width: 920px;
+  margin-inline: auto;
+}
+
+.cbdas-landing .cbdas-sponsor-image,
+.cbdas-landing .cbdas-sponsor-image img {
+  overflow: hidden;
+  border-radius: 24px;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.cbdas-landing.cbdas-footer-section {
+  color: #fff;
+  background: #111827 !important;
+}
+
+.cbdas-landing .cbdas-footer-heading {
+  color: #94a3b8;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.cbdas-landing .cbdas-footer-text,
+.cbdas-landing .cbdas-footer-list {
+  color: #cbd5e1;
+}
+
+.cbdas-landing .cbdas-social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.cbdas-landing .cbdas-social a {
+  display: inline-flex;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  padding: 0.45rem 0.75rem;
+  color: #cbd5e1;
+}
+
+.cbdas-landing .cbdas-developer-logo {
+  margin-top: 1rem;
+}
+
+@media (max-width: 960px) {
+  .cbdas-landing .cbdas-meta,
+  .cbdas-landing .cbdas-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cbdas-landing .cbdas-meta span,
+  .cbdas-landing .cbdas-actions a,
+  .cbdas-landing .cbdas-button {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cbdas-landing *,
+  .cbdas-landing *::before,
+  .cbdas-landing *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

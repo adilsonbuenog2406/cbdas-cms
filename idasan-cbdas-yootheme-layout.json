@@ -1,0 +1,948 @@
+{
+  "type": "layout",
+  "name": "IDASAN CBDAS Landing",
+  "version": "4.0.0",
+  "props": {
+    "class": "cbdas-landing-layout"
+  },
+  "children": [
+    {
+      "type": "section",
+      "props": {
+        "id": "inicio",
+        "class": "cbdas-landing cbdas-hero-section",
+        "style": "primary",
+        "width": "default",
+        "padding": "none",
+        "image": "images/cbdas/elementosbrasilia2.png",
+        "image_position": "center-center",
+        "image_size": "cover",
+        "image_effect": "fixed"
+      },
+      "children": [
+        {
+          "type": "row",
+          "props": {
+            "layout": "1-1",
+            "width": "default",
+            "class": "cbdas-hero-row"
+          },
+          "children": [
+            {
+              "type": "column",
+              "props": {
+                "width": "1-1",
+                "class": "cbdas-hero-column"
+              },
+              "children": [
+                {
+                  "type": "image",
+                  "props": {
+                    "image": "images/cbdas/logodark.webp",
+                    "alt": "IDASAN CBDAS",
+                    "width": "180",
+                    "class": "cbdas-hero-logo"
+                  }
+                },
+                {
+                  "type": "html",
+                  "props": {
+                    "content": "<div class=\"cbdas-meta\"><span>20 e 21 de agosto</span><span>Brasília - DF</span></div>"
+                  }
+                },
+                {
+                  "type": "image",
+                  "props": {
+                    "image": "images/cbdas/heroasset.png",
+                    "alt": "Arte oficial do IIIº CBDAS",
+                    "width": "745",
+                    "class": "cbdas-hero-art"
+                  }
+                },
+                {
+                  "type": "divider",
+                  "props": {
+                    "class": "cbdas-hero-divider"
+                  }
+                },
+                {
+                  "type": "headline",
+                  "props": {
+                    "content": "IIIº Congresso Brasileiro de Direito Administrativo Sancionador",
+                    "title_element": "h1",
+                    "text_align": "center",
+                    "class": "cbdas-hero-headline"
+                  }
+                },
+                {
+                  "type": "text",
+                  "props": {
+                    "content": "Em Brasília de 20 a 21 de agosto de 2026",
+                    "text_align": "center",
+                    "class": "cbdas-hero-subtitle"
+                  }
+                },
+                {
+                  "type": "button",
+                  "props": {
+                    "content": "Inscreva-se Agora",
+                    "link": "https://www.eventweb.com.br/iii_cbdas/home-event/",
+                    "link_target": "_blank",
+                    "button_style": "primary",
+                    "text_align": "center",
+                    "class": "cbdas-button cbdas-button-gold"
+                  }
+                },
+                {
+                  "type": "row",
+                  "props": {
+                    "layout": "1-2,1-2",
+                    "width": "large",
+                    "class": "cbdas-hero-secondary-row"
+                  },
+                  "children": [
+                    {
+                      "type": "column",
+                      "props": {
+                        "width": "1-2"
+                      },
+                      "children": [
+                        {
+                          "type": "button",
+                          "props": {
+                            "content": "Submissões de artigos",
+                            "link": "https://www.eventweb.com.br/iii_cbdas/home-event/",
+                            "link_target": "_blank",
+                            "button_style": "default",
+                            "class": "cbdas-button cbdas-button-outline"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "column",
+                      "props": {
+                        "width": "1-2"
+                      },
+                      "children": [
+                        {
+                          "type": "button",
+                          "props": {
+                            "content": "Instruções para submissão de artigo",
+                            "link": "https://drive.google.com/drive/u/0/folders/1lP3GMHOVfJF5ooIos8ABXinALEDs-bMv",
+                            "link_target": "_blank",
+                            "button_style": "default",
+                            "class": "cbdas-button cbdas-button-outline"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "props": {
+        "id": "acessos-rapidos",
+        "class": "cbdas-landing cbdas-actions-section",
+        "style": "default",
+        "width": "expand",
+        "padding": "small"
+      },
+      "children": [
+        {
+          "type": "row",
+          "props": {
+            "layout": "1-1",
+            "width": "expand"
+          },
+          "children": [
+            {
+              "type": "column",
+              "props": {
+                "width": "1-1"
+              },
+              "children": [
+                {
+                  "type": "html",
+                  "props": {
+                    "content": "<nav class=\"cbdas-actions\" aria-label=\"Acessos rápidos do congresso\"><a href=\"#inscricoes\">Inscrições</a><a href=\"#programacao\">Programação</a><a href=\"https://docs.google.com/forms/d/e/1FAIpQLSczNtrBcQndorRXiGjOzr9X2pCgn4PlsxqT9zxMHquvpoaQHQ/viewform\" target=\"_blank\" rel=\"noopener noreferrer\">Seja um patrocinador</a><a href=\"https://www.eventweb.com.br/iii_cbdas/home-event/\" target=\"_blank\" rel=\"noopener noreferrer\">Submissões de artigos</a><a href=\"https://drive.google.com/drive/u/0/folders/1lP3GMHOVfJF5ooIos8ABXinALEDs-bMv\" target=\"_blank\" rel=\"noopener noreferrer\">Instruções para submissão de artigo</a><a href=\"#empenho\">Instruções para empenho</a></nav>"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "props": {
+        "id": "sobre",
+        "class": "cbdas-landing cbdas-about-section",
+        "style": "default",
+        "width": "default",
+        "padding": "large"
+      },
+      "children": [
+        {
+          "type": "row",
+          "props": {
+            "layout": "1-2,1-2",
+            "width": "large",
+            "class": "cbdas-about-row"
+          },
+          "children": [
+            {
+              "type": "column",
+              "props": {
+                "width": "1-2",
+                "class": "cbdas-about-gallery-column"
+              },
+              "children": [
+                {
+                  "type": "grid",
+                  "props": {
+                    "class": "cbdas-image-grid",
+                    "grid_column_gap": "small",
+                    "grid_row_gap": "small",
+                    "child_width": "1-3"
+                  },
+                  "children": [
+                    {
+                      "type": "image",
+                      "props": {
+                        "image": "images/cbdas/idasansampa.webp",
+                        "alt": "Auditório do congresso com plenária em andamento",
+                        "class": "cbdas-rounded-image cbdas-gallery-main"
+                      }
+                    },
+                    {
+                      "type": "image",
+                      "props": {
+                        "image": "images/cbdas/idasanpalcosampa.webp",
+                        "alt": "Palco do congresso com painel",
+                        "class": "cbdas-rounded-image"
+                      }
+                    },
+                    {
+                      "type": "image",
+                      "props": {
+                        "image": "images/cbdas/plateiaidasan.webp",
+                        "alt": "Plateia do congresso acompanhando palestra",
+                        "class": "cbdas-rounded-image"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "column",
+              "props": {
+                "width": "1-2",
+                "class": "cbdas-copy-column"
+              },
+              "children": [
+                {
+                  "type": "headline",
+                  "props": {
+                    "content": "Sobre o IIIº CBDAS",
+                    "title_element": "h3",
+                    "class": "cbdas-eyebrow"
+                  }
+                },
+                {
+                  "type": "headline",
+                  "props": {
+                    "content": "IIIº CBDAS",
+                    "title_element": "h2",
+                    "class": "cbdas-section-title"
+                  }
+                },
+                {
+                  "type": "text",
+                  "props": {
+                    "content": "O congresso brasileiro de direito administrativo sancionador chega à sua terceira edição consolidado como o principal fórum nacional dedicado ao estudo, debate e desenvolvimento do Direito Administrativo Sancionador.\n\nSediado desta vez em Brasília, o IIIº CBDAS reunirá especialistas, autoridades públicas, acadêmicos e profissionais de todas as regiões do país, promovendo o diálogo entre teoria, legislação e prática.\n\nO congresso reafirma seu compromisso com a diversidade regional, racial e de gênero, assegura pluralidade de perspectivas e fortalece o desenvolvimento institucional do Direito Administrativo Sancionador no Brasil.",
+                    "class": "cbdas-body-text"
+                  }
+                },
+                {
+                  "type": "grid",
+                  "props": {
+                    "class": "cbdas-facts-grid",
+                    "child_width": "1-2",
+                    "grid_column_gap": "small"
+                  },
+                  "children": [
+                    {
+                      "type": "panel",
+                      "props": {
+                        "title": "Local",
+                        "content": "Centro Internacional de Convenções do Brasil (CICB), Brasília - DF",
+                        "class": "cbdas-fact-panel"
+                      }
+                    },
+                    {
+                      "type": "panel",
+                      "props": {
+                        "title": "Quando",
+                        "content": "20 e 21 de agosto de 2026",
+                        "class": "cbdas-fact-panel"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "props": {
+        "id": "programacao",
+        "class": "cbdas-landing cbdas-schedule-section",
+        "style": "muted",
+        "width": "default",
+        "padding": "large"
+      },
+      "children": [
+        {
+          "type": "row",
+          "props": {
+            "layout": "1-1",
+            "width": "large"
+          },
+          "children": [
+            {
+              "type": "column",
+              "props": {
+                "width": "1-1"
+              },
+              "children": [
+                {
+                  "type": "headline",
+                  "props": {
+                    "content": "Agenda Completa",
+                    "title_element": "h3",
+                    "text_align": "center",
+                    "class": "cbdas-eyebrow"
+                  }
+                },
+                {
+                  "type": "headline",
+                  "props": {
+                    "content": "Programação",
+                    "title_element": "h2",
+                    "text_align": "center",
+                    "class": "cbdas-section-title"
+                  }
+                },
+                {
+                  "type": "grid",
+                  "props": {
+                    "class": "cbdas-schedule-grid",
+                    "child_width": "1-2",
+                    "grid_column_gap": "medium",
+                    "grid_row_gap": "medium"
+                  },
+                  "children": [
+                    {
+                      "type": "panel",
+                      "props": {
+                        "title": "Dia 1 - 20/08",
+                        "content": "08h30 - 09h00 | Credenciamento\n09h00 | Abertura\n09h30 | Conferência de abertura\n10h - 11h15 | Painel 1: Tribunais de Contas, medidas cautelares, dever de ressarcimento e sanções\n11h15 - 12h30 | Painel 2: DAS e a lei de inelegibilidade\n14h15 - 15h30 | Painel 3: Empresas estatais: nuances e questões polêmicas de DAS nos 10 anos de Estatuto\n15h45 - 16h30 | Painel 4: O conflito de interesses na administração pública\n16h30 - 16h50 | Coffee Break\n17h00 - 17h30 | IDASANcast: garantias no processo administrativo sancionador\n17h30 - 18h30 | Conferência especial: Reforma administrativa e responsabilização\n18h30 - 19h | Lançamentos",
+                        "class": "cbdas-schedule-panel"
+                      }
+                    },
+                    {
+                      "type": "panel",
+                      "props": {
+                        "title": "Dia 2 - 21/08",
+                        "content": "9h - 10h15 | Painel 5: O papel do DAS na regulação de serviços públicos e incentivo de conformidade\n10h15 - 11h30 | Painel 6: DAS na CVM e no Banco Central e o controle externo\n11h30 - 12h30 | CILADAS Credibilidade institucional e DAS\n14h30 - 15h45 | Painel 7: Governança e integridade pública\n15h45 - 16h15 | Prêmio IDASAN de Ouro ou Notáveis IDASAN Artigos científicos\n16h15 - 16h30 | Coffee Break\n16h30 - 17h | Conferência especial: Improbidade e DAS\n17h - 18h | Conferência de encerramento: Precisamos falar de uma lei geral de DAS?",
+                        "class": "cbdas-schedule-panel"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "props": {
+        "id": "inscricoes",
+        "class": "cbdas-landing cbdas-registration-section",
+        "style": "default",
+        "width": "default",
+        "padding": "large"
+      },
+      "children": [
+        {
+          "type": "row",
+          "props": {
+            "layout": "1-1",
+            "width": "default"
+          },
+          "children": [
+            {
+              "type": "column",
+              "props": {
+                "width": "1-1"
+              },
+              "children": [
+                {
+                  "type": "headline",
+                  "props": {
+                    "content": "Inscrições para Submissões de Artigos",
+                    "title_element": "h2",
+                    "text_align": "center",
+                    "class": "cbdas-section-title"
+                  }
+                },
+                {
+                  "type": "text",
+                  "props": {
+                    "content": "Confira os períodos de inscrição e os benefícios disponíveis para cada etapa.",
+                    "text_align": "center",
+                    "class": "cbdas-body-text cbdas-centered-text"
+                  }
+                },
+                {
+                  "type": "grid",
+                  "props": {
+                    "class": "cbdas-pricing-grid",
+                    "child_width": "1-2",
+                    "grid_column_gap": "medium"
+                  },
+                  "children": [
+                    {
+                      "type": "panel",
+                      "props": {
+                        "title": "1ª etapa",
+                        "content": "Período: 01/06/2026 a 30/06/2026\nBenefício: 100% de isenção",
+                        "class": "cbdas-pricing-panel"
+                      }
+                    },
+                    {
+                      "type": "panel",
+                      "props": {
+                        "title": "2ª etapa",
+                        "content": "Período: 01/07/2026 a 20/07/2026\nBenefício: 30% de desconto",
+                        "class": "cbdas-pricing-panel"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "button",
+                  "props": {
+                    "content": "Inscreva-se",
+                    "link": "https://www.eventweb.com.br/iii_cbdas/home-event/",
+                    "link_target": "_blank",
+                    "button_style": "primary",
+                    "text_align": "center",
+                    "class": "cbdas-button cbdas-button-primary"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "props": {
+        "id": "artigos-cientificos",
+        "class": "cbdas-landing cbdas-articles-section",
+        "style": "default",
+        "width": "default",
+        "padding": "large"
+      },
+      "children": [
+        {
+          "type": "row",
+          "props": {
+            "layout": "1-1",
+            "width": "default"
+          },
+          "children": [
+            {
+              "type": "column",
+              "props": {
+                "width": "1-1"
+              },
+              "children": [
+                {
+                  "type": "icon",
+                  "props": {
+                    "icon": "file-text",
+                    "text_align": "center",
+                    "class": "cbdas-section-icon"
+                  }
+                },
+                {
+                  "type": "headline",
+                  "props": {
+                    "content": "Artigos Científicos",
+                    "title_element": "h2",
+                    "text_align": "center",
+                    "class": "cbdas-section-title"
+                  }
+                },
+                {
+                  "type": "headline",
+                  "props": {
+                    "content": "Submissão de trabalhos para o IIIº CBDAS",
+                    "title_element": "h3",
+                    "text_align": "center",
+                    "class": "cbdas-section-subtitle"
+                  }
+                },
+                {
+                  "type": "text",
+                  "props": {
+                    "content": "Acesse a plataforma de submissões ou consulte as instruções completas para envio de artigos científicos ao IIIº Congresso Brasileiro de Direito Administrativo Sancionador.",
+                    "text_align": "center",
+                    "class": "cbdas-body-text cbdas-centered-text"
+                  }
+                },
+                {
+                  "type": "row",
+                  "props": {
+                    "layout": "1-2,1-2",
+                    "width": "default",
+                    "class": "cbdas-two-button-row"
+                  },
+                  "children": [
+                    {
+                      "type": "column",
+                      "props": {
+                        "width": "1-2"
+                      },
+                      "children": [
+                        {
+                          "type": "button",
+                          "props": {
+                            "content": "Submissões de artigos",
+                            "link": "https://www.eventweb.com.br/iii_cbdas/home-event/",
+                            "link_target": "_blank",
+                            "button_style": "primary",
+                            "class": "cbdas-button cbdas-button-primary"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "column",
+                      "props": {
+                        "width": "1-2"
+                      },
+                      "children": [
+                        {
+                          "type": "button",
+                          "props": {
+                            "content": "Instruções para submissão de artigo",
+                            "link": "https://drive.google.com/drive/u/0/folders/1lP3GMHOVfJF5ooIos8ABXinALEDs-bMv",
+                            "link_target": "_blank",
+                            "button_style": "default",
+                            "class": "cbdas-button cbdas-button-secondary"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "props": {
+        "id": "empenho",
+        "class": "cbdas-landing cbdas-commitment-section",
+        "style": "default",
+        "width": "default",
+        "padding": "large"
+      },
+      "children": [
+        {
+          "type": "row",
+          "props": {
+            "layout": "1-1",
+            "width": "default"
+          },
+          "children": [
+            {
+              "type": "column",
+              "props": {
+                "width": "1-1"
+              },
+              "children": [
+                {
+                  "type": "headline",
+                  "props": {
+                    "content": "Instruções para Empenho",
+                    "title_element": "h2",
+                    "text_align": "center",
+                    "class": "cbdas-section-title"
+                  }
+                },
+                {
+                  "type": "grid",
+                  "props": {
+                    "class": "cbdas-data-grid",
+                    "child_width": "1-2",
+                    "grid_column_gap": "medium",
+                    "grid_row_gap": "medium"
+                  },
+                  "children": [
+                    {
+                      "type": "panel",
+                      "props": {
+                        "title": "Razão Social",
+                        "content": "INSTITUTO DE DIREITO ADMINISTRATIVO SANCIONADOR BRASILEIRO - IDASAN",
+                        "class": "cbdas-data-panel"
+                      }
+                    },
+                    {
+                      "type": "panel",
+                      "props": {
+                        "title": "CNPJ",
+                        "content": "39.963.974/0001-06",
+                        "class": "cbdas-data-panel"
+                      }
+                    },
+                    {
+                      "type": "panel",
+                      "props": {
+                        "title": "Sede",
+                        "content": "Rua Correia de Lemos, n° 645, unidade 43, São Paulo/SP, CEP 41.400-000",
+                        "class": "cbdas-data-panel"
+                      }
+                    },
+                    {
+                      "type": "panel",
+                      "props": {
+                        "title": "Dados Bancários",
+                        "content": "Banco Itaú, Agência 1664, Conta 99539-4",
+                        "class": "cbdas-data-panel"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "button",
+                  "props": {
+                    "content": "Acessar Documentos",
+                    "link": "https://drive.google.com/drive/folders/1x0YD9AyQhk0VHYiWMzZebGnGW8ZOy6bg?usp=sharing",
+                    "link_target": "_blank",
+                    "button_style": "default",
+                    "text_align": "center",
+                    "class": "cbdas-button cbdas-button-secondary"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "props": {
+        "id": "local",
+        "class": "cbdas-landing cbdas-location-section",
+        "style": "muted",
+        "width": "default",
+        "padding": "large"
+      },
+      "children": [
+        {
+          "type": "row",
+          "props": {
+            "layout": "1-2,1-2",
+            "width": "large"
+          },
+          "children": [
+            {
+              "type": "column",
+              "props": {
+                "width": "1-2",
+                "class": "cbdas-copy-column"
+              },
+              "children": [
+                {
+                  "type": "headline",
+                  "props": {
+                    "content": "Brasília - DF",
+                    "title_element": "h3",
+                    "class": "cbdas-eyebrow"
+                  }
+                },
+                {
+                  "type": "headline",
+                  "props": {
+                    "content": "Local do Evento",
+                    "title_element": "h2",
+                    "class": "cbdas-section-title"
+                  }
+                },
+                {
+                  "type": "panel",
+                  "props": {
+                    "title": "Centro Internacional de Convenções do Brasil (CICB)",
+                    "content": "SCES, Asa Sul Trecho 2 Conjunto 63 Lote 50 - Plano Piloto, Brasília - DF",
+                    "class": "cbdas-location-panel"
+                  }
+                },
+                {
+                  "type": "button",
+                  "props": {
+                    "content": "Como Chegar",
+                    "link": "https://maps.app.goo.gl/Sx1Rs9kcHU18QSbo9",
+                    "link_target": "_blank",
+                    "button_style": "default",
+                    "class": "cbdas-button cbdas-button-secondary"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "column",
+              "props": {
+                "width": "1-2"
+              },
+              "children": [
+                {
+                  "type": "image",
+                  "props": {
+                    "image": "images/cbdas/brasilia.jpeg",
+                    "alt": "Vista de Brasília",
+                    "class": "cbdas-rounded-image cbdas-location-image"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "props": {
+        "id": "patrocinadores",
+        "class": "cbdas-landing cbdas-sponsors-section",
+        "style": "primary",
+        "width": "default",
+        "padding": "large"
+      },
+      "children": [
+        {
+          "type": "row",
+          "props": {
+            "layout": "1-1",
+            "width": "default"
+          },
+          "children": [
+            {
+              "type": "column",
+              "props": {
+                "width": "1-1"
+              },
+              "children": [
+                {
+                  "type": "headline",
+                  "props": {
+                    "content": "Patrocinadores e Apoiadores",
+                    "title_element": "h2",
+                    "text_align": "center",
+                    "class": "cbdas-section-title cbdas-light-title"
+                  }
+                },
+                {
+                  "type": "grid",
+                  "props": {
+                    "class": "cbdas-sponsor-grid",
+                    "child_width": "1-1",
+                    "grid_row_gap": "medium"
+                  },
+                  "children": [
+                    {
+                      "type": "image",
+                      "props": {
+                        "image": "images/cbdas/diamante.png",
+                        "alt": "Patrocinadores Diamante",
+                        "class": "cbdas-sponsor-image"
+                      }
+                    },
+                    {
+                      "type": "image",
+                      "props": {
+                        "image": "images/cbdas/ouro.png",
+                        "alt": "Patrocinadores Ouro",
+                        "class": "cbdas-sponsor-image"
+                      }
+                    },
+                    {
+                      "type": "image",
+                      "props": {
+                        "image": "images/cbdas/prata.png",
+                        "alt": "Patrocinadores Prata",
+                        "class": "cbdas-sponsor-image"
+                      }
+                    },
+                    {
+                      "type": "image",
+                      "props": {
+                        "image": "images/cbdas/apoiadores.png",
+                        "alt": "Apoiadores",
+                        "class": "cbdas-sponsor-image"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "props": {
+        "id": "contato",
+        "class": "cbdas-landing cbdas-footer-section",
+        "style": "secondary",
+        "width": "default",
+        "padding": "large"
+      },
+      "children": [
+        {
+          "type": "row",
+          "props": {
+            "layout": "1-3,1-3,1-3",
+            "width": "large",
+            "class": "cbdas-footer-row"
+          },
+          "children": [
+            {
+              "type": "column",
+              "props": {
+                "width": "1-3"
+              },
+              "children": [
+                {
+                  "type": "image",
+                  "props": {
+                    "image": "images/cbdas/logodark.webp",
+                    "alt": "IIIº CBDAS",
+                    "width": "150",
+                    "class": "cbdas-footer-logo"
+                  }
+                },
+                {
+                  "type": "text",
+                  "props": {
+                    "content": "O principal fórum nacional dedicado ao estudo, debate e desenvolvimento do Direito Administrativo Sancionador.",
+                    "class": "cbdas-footer-text"
+                  }
+                },
+                {
+                  "type": "html",
+                  "props": {
+                    "content": "<div class=\"cbdas-social\"><a href=\"https://www.instagram.com/insta.idasan/\" target=\"_blank\" rel=\"noopener noreferrer\">Instagram</a><a href=\"https://www.linkedin.com/company/idasan/posts/?feedView=all&viewAsMember=true\" target=\"_blank\" rel=\"noopener noreferrer\">LinkedIn</a><a href=\"https://www.youtube.com/@idasan9159\" target=\"_blank\" rel=\"noopener noreferrer\">YouTube</a></div>"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "column",
+              "props": {
+                "width": "1-3"
+              },
+              "children": [
+                {
+                  "type": "headline",
+                  "props": {
+                    "content": "Links Rápidos",
+                    "title_element": "h3",
+                    "class": "cbdas-footer-heading"
+                  }
+                },
+                {
+                  "type": "list",
+                  "props": {
+                    "content": "Inscrições\nProgramação\nSubmissão de Artigos\nLocal",
+                    "class": "cbdas-footer-list"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "column",
+              "props": {
+                "width": "1-3"
+              },
+              "children": [
+                {
+                  "type": "headline",
+                  "props": {
+                    "content": "Contato",
+                    "title_element": "h3",
+                    "class": "cbdas-footer-heading"
+                  }
+                },
+                {
+                  "type": "text",
+                  "props": {
+                    "content": "contato@idasan.com.br",
+                    "class": "cbdas-footer-text"
+                  }
+                },
+                {
+                  "type": "divider",
+                  "props": {
+                    "class": "cbdas-footer-divider"
+                  }
+                },
+                {
+                  "type": "text",
+                  "props": {
+                    "content": "© 2026 IDASAN. Todos os direitos reservados.",
+                    "class": "cbdas-footer-text"
+                  }
+                },
+                {
+                  "type": "image",
+                  "props": {
+                    "image": "images/cbdas/centoeonzelogo.png",
+                    "alt": "centoeonze",
+                    "width": "120",
+                    "link": "https://centoeonze.space/",
+                    "link_target": "_blank",
+                    "class": "cbdas-developer-logo"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

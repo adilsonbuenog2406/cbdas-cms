@@ -151,6 +151,10 @@ const speakerCatalog = [
     role: 'Diretora de Assuntos Jurídico-Regulatórios',
   },
   {
+    name: 'Ana Clara Barcessat',
+    role: 'Assessora Executiva de Governança, Gestão de Riscos e Compliance',
+  },
+  {
     name: 'Ana Luiza Queiroz Melo Jacoby Fernandes',
     role: 'Advogada',
   },
@@ -216,6 +220,10 @@ const speakerCatalog = [
     role: 'Ex-ministro da Advocacia-Geral da União',
   },
   {
+    name: 'Fábio Eduardo Galvão Ferreira Costa',
+    role: 'Sócio do Medina Osório Advogados',
+  },
+  {
     name: 'Felipe Dalenogare Alves',
     role: 'Professor de Direito Administrativo',
   },
@@ -243,6 +251,10 @@ const speakerCatalog = [
   {
     name: 'Jorge Ulisses Jacoby Fernandes',
     role: 'Advogado e Jornalista',
+  },
+  {
+    name: 'José Guilherme Berman',
+    role: 'Advogado e professor da PUC-Rio',
   },
   {
     name: 'Juliano Heinen',
@@ -440,14 +452,17 @@ const candidatePhotoAssignments = speakerPhotoEntries
 
 const preferredPhotoFileNameBySpeaker = new Map<string, string>([
   ['Alice Voronoff', 'alice voronoff.png'],
+  ['Ana Clara Barcessat', 'A84AD0BF-C0E5-403E-9820-42938046BA6D - Ana Clara Barcessat.jpeg'],
   ['Ana Frazão', 'draanafrazao.png'],
   ['Claudia Braga Tomelin', 'claudiabragatomelin.png'],
   ['Antonio Rodrigo Machado', 'Antonio Rodrigo Machado.png'],
   ['Carmen Lúcia', 'foto-diego-bresani---minist.webp'],
   ['Christianne de Carvalho Stroppa', 'Christianne de Carvalho Stroppa.png'],
   ['Cristiana Fortini', 'Cristiana Fortini.png'],
+  ['Fábio Eduardo Galvão Ferreira Costa', 'WhatsApp Image 2026-06-17 at 17.39.40 - Fabio Galvao.jpeg'],
   ['Gustavo Henrique Justino de Oliveira', '06808AEB-A1E6-4E2C-9BE2-A24B66F88C27 - Gustavo Henrique Justino de Oliveira.jpeg'],
   ['Juliano Heinen', 'Foto - Juliano H.jpg'],
+  ['José Guilherme Berman', 'joseguilhermeberman.png'],
   ['Marcelo Costenaro Cavali', 'foto divulgação - MARCELO COSTENARO CAVALI.jpeg'],
   ['Michael de Jesus', '059_Michael_Boxfotografia_220920 - Michael de Jesus.jpeg'],
   ['Pablo Ademir de Souza', 'Pablo Ademir de Souza1.png'],

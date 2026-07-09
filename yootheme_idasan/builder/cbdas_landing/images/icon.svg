@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" role="img" aria-label="CBDAS">
+  <rect width="80" height="80" rx="18" fill="#061539"/>
+  <path d="M18 52h44v6H18z" fill="#f9d600"/>
+  <path d="M24 48h32L48 22H32z" fill="#ffffff"/>
+  <path d="M35 22h10v30H35z" fill="#f9d600"/>
+  <path d="M26 30h28v5H26z" fill="#061539" opacity=".75"/>
+</svg>

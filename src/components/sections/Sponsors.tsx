@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { SectionTitle } from '../shared/SectionTitle';
 import diamondImage from '../../assets/Diamante.png';
-import supportersImage from '../../assets/Apoiadores.png';
+import supportersImage from '../../assets/Apoiadores (1).png';
 import goldImage from '../../assets/Ouro.png';
 import silverImage from '../../assets/Prata.png';
 

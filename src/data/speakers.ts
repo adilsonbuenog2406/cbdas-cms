@@ -330,7 +330,7 @@ const speakerCatalog = [
   },
   {
     name: 'Renata Victer',
-    role: 'Advogada do BNDES',
+    role: 'Doutora em Direito da Regulaçao pela FGV Direito Rio. Advogada do BNDES.',
   },
   {
     name: 'Renata Lane',

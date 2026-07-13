@@ -139,6 +139,12 @@ export async function executeDeployment(deploymentId: string) {
           filesUploaded,
         });
       },
+      onWarning: async (warning: string) => {
+        const currentRecord = await getDeploymentRecord(deploymentId);
+        await updateDeploymentRecord(deploymentId, currentRecord?.status ?? "validating", {
+          warning,
+        });
+      },
     };
 
     const layout = await publishReleaseViaSftp({

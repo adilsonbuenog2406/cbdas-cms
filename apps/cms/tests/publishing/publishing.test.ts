@@ -14,7 +14,9 @@ import {
 import { createDeploymentManifest } from "../../server/publishing/create-manifest";
 import {
   assertRemotePathInsidePublishRoot,
+  backupReuseWindowMs,
   resolvePublishRemotePath,
+  selectReusableBackupPath,
 } from "../../server/publishing/sftp-publisher";
 import { injectDeploymentMeta } from "../../server/publishing/build-release";
 import { validateRelease } from "../../server/publishing/validate-release";
@@ -85,6 +87,49 @@ test("bloqueia escrita fora da pasta da landing", () => {
   assert.throws(
     () => assertRemotePathInsidePublishRoot(root, `${root}-backup/assets/index.css`),
     DeploymentError,
+  );
+});
+
+test("reutiliza backup remoto criado nos ultimos 7 dias", () => {
+  const backupsRoot = `domains/idasan.com.br/public_html/${landingSlug}/.cms-backups`;
+  const nowMs = Date.parse("2026-07-13T12:00:00.000Z");
+
+  assert.equal(
+    selectReusableBackupPath({
+      backupsRoot,
+      entries: [
+        {
+          name: `${landingSlug}-2026-07-01T12-00-00-000Z`,
+          type: "d",
+        },
+        {
+          name: `${landingSlug}-2026-07-11T09-30-00-000Z`,
+          type: "d",
+        },
+        {
+          name: `${landingSlug}-2026-07-12T09-30-00-000Z`,
+          type: "d",
+        },
+      ],
+      maxAgeMs: backupReuseWindowMs,
+      nowMs,
+    }),
+    `${backupsRoot}/${landingSlug}-2026-07-12T09-30-00-000Z`,
+  );
+
+  assert.equal(
+    selectReusableBackupPath({
+      backupsRoot,
+      entries: [
+        {
+          name: `${landingSlug}-2026-07-01T12-00-00-000Z`,
+          type: "d",
+        },
+      ],
+      maxAgeMs: backupReuseWindowMs,
+      nowMs,
+    }),
+    null,
   );
 });
 

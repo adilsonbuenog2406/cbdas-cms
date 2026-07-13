@@ -11,6 +11,7 @@ type PublishCallbacks = {
   onUploadProgress: (filesUploaded: number, bytesUploaded: number) => Promise<void>;
   onMode: (mode: "atomic" | "non_atomic", warning?: string) => Promise<void>;
   onBackupPath: (backupPath: string | null) => Promise<void>;
+  onWarning: (warning: string) => Promise<void>;
 };
 
 type UploadFile = DeploymentManifestFile & {
@@ -20,6 +21,13 @@ type UploadFile = DeploymentManifestFile & {
 type RemotePathResolverClient = Pick<Client, "exists">;
 
 const cmsInternalDirs = new Set([".cms-backups", ".cms-deploys", ".cms-failed"]);
+export const backupReuseWindowMs = 7 * 24 * 60 * 60 * 1000;
+
+export type RemoteBackupEntry = {
+  name: string;
+  type: string;
+  modifyTime?: number;
+};
 
 function remoteJoin(...parts: string[]) {
   return pathPosix.normalize(pathPosix.join(...parts));
@@ -101,6 +109,87 @@ function getRemoteLayout(remotePath: string, deploymentId: string) {
     backupPath,
     failedPath,
   };
+}
+
+function normalizeTimestampMs(timestamp: number | undefined) {
+  if (!timestamp || !Number.isFinite(timestamp)) {
+    return null;
+  }
+
+  return timestamp < 1_000_000_000_000 ? timestamp * 1000 : timestamp;
+}
+
+export function getBackupCreatedAtMs(entry: RemoteBackupEntry) {
+  const prefix = `${landingSlug}-`;
+
+  if (entry.name.startsWith(prefix)) {
+    const timestamp = entry.name.slice(prefix.length);
+    const match = /^(\d{4}-\d{2}-\d{2})T(\d{2})-(\d{2})-(\d{2})-(\d{3})Z$/.exec(
+      timestamp,
+    );
+
+    if (match) {
+      const [, date, hours, minutes, seconds, milliseconds] = match;
+      const parsedTime = Date.parse(`${date}T${hours}:${minutes}:${seconds}.${milliseconds}Z`);
+
+      if (Number.isFinite(parsedTime)) {
+        return parsedTime;
+      }
+    }
+  }
+
+  return normalizeTimestampMs(entry.modifyTime);
+}
+
+export function selectReusableBackupPath({
+  backupsRoot,
+  entries,
+  maxAgeMs = backupReuseWindowMs,
+  nowMs = Date.now(),
+}: {
+  backupsRoot: string;
+  entries: RemoteBackupEntry[];
+  maxAgeMs?: number;
+  nowMs?: number;
+}) {
+  const reusableBackup = entries
+    .filter((entry) => entry.type === "d" && entry.name.startsWith(`${landingSlug}-`))
+    .map((entry) => ({
+      entry,
+      createdAtMs: getBackupCreatedAtMs(entry),
+    }))
+    .filter(
+      (backup): backup is { entry: RemoteBackupEntry; createdAtMs: number } =>
+        backup.createdAtMs !== null &&
+        backup.createdAtMs <= nowMs &&
+        nowMs - backup.createdAtMs <= maxAgeMs,
+    )
+    .sort((first, second) => second.createdAtMs - first.createdAtMs)[0];
+
+  return reusableBackup ? remoteJoin(backupsRoot, reusableBackup.entry.name) : null;
+}
+
+async function findReusableBackupPath({
+  backupsRoot,
+  client,
+  publishRoot,
+}: {
+  backupsRoot: string;
+  client: Client;
+  publishRoot: string;
+}) {
+  assertRemotePathInsidePublishRoot(publishRoot, backupsRoot);
+
+  if (!(await remoteExists(client, backupsRoot))) {
+    return null;
+  }
+
+  const entries = (await client.list(backupsRoot)) as RemoteBackupEntry[];
+
+  return selectReusableBackupPath({
+    backupsRoot,
+    entries,
+  });
 }
 
 async function ensureRemoteDirectory(
@@ -308,11 +397,22 @@ async function activateNonAtomic({
   await callbacks.onStage("backing_up");
 
   if (await remoteExists(client, config.remotePath)) {
-    await removeRemotePath(client, config.remotePath, layout.backupPath).catch(() => {});
-    await copyRemoteDirectory(client, config.remotePath, config.remotePath, layout.backupPath, {
-      skipCmsInternal: true,
+    const reusableBackupPath = await findReusableBackupPath({
+      backupsRoot: layout.backupsRoot,
+      client,
+      publishRoot: config.remotePath,
     });
-    await callbacks.onBackupPath(layout.backupPath);
+
+    if (reusableBackupPath) {
+      await callbacks.onBackupPath(reusableBackupPath);
+      await callbacks.onWarning("Backup recente dos últimos 7 dias reutilizado.");
+    } else {
+      await removeRemotePath(client, config.remotePath, layout.backupPath).catch(() => {});
+      await copyRemoteDirectory(client, config.remotePath, config.remotePath, layout.backupPath, {
+        skipCmsInternal: true,
+      });
+      await callbacks.onBackupPath(layout.backupPath);
+    }
   }
 
   await callbacks.onStage("activating");

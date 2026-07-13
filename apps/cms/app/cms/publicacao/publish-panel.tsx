@@ -81,6 +81,45 @@ function getStatusText(status: DeploymentStatus) {
   return labels[status];
 }
 
+function getDeploymentProgressPercent(record: DeploymentRecord) {
+  if (record.status === "published" || record.status === "rolled_back") {
+    return 100;
+  }
+
+  if (record.status === "rolling_back") {
+    return 92;
+  }
+
+  const currentStageIndex = stageLabels.findIndex((stage) => stage.status === record.status);
+
+  if (currentStageIndex < 0) {
+    return record.status === "failed" ? 100 : 4;
+  }
+
+  if (record.status === "uploading" && record.totalBytes > 0) {
+    const uploadRatio = Math.min(1, record.bytesUploaded / record.totalBytes);
+    return Math.round(((currentStageIndex + uploadRatio) / stageLabels.length) * 100);
+  }
+
+  const stageWeight = record.status === "failed" ? 1 : 0.35;
+
+  return Math.max(
+    4,
+    Math.min(100, Math.round(((currentStageIndex + stageWeight) / stageLabels.length) * 100)),
+  );
+}
+
+function getStageLabel(stage: (typeof stageLabels)[number], deployment: DeploymentRecord) {
+  if (
+    stage.status === "backing_up" &&
+    deployment.warnings.some((warning) => warning.includes("Backup recente"))
+  ) {
+    return "Backup recente reutilizado";
+  }
+
+  return stage.label;
+}
+
 export default function PublishPanel({ initialDeployments }: PublishPanelProps) {
   const [deployments, setDeployments] = useState(initialDeployments);
   const [activeDeploymentId, setActiveDeploymentId] = useState(
@@ -96,6 +135,7 @@ export default function PublishPanel({ initialDeployments }: PublishPanelProps) 
     [activeDeploymentId, deployments],
   );
   const isPublishing = Boolean(activeDeployment && activeStatuses.has(activeDeployment.status));
+  const progressPercent = activeDeployment ? getDeploymentProgressPercent(activeDeployment) : 0;
 
   async function refreshHistory() {
     const response = await fetch("/api/cms/publish/history", { cache: "no-store" });
@@ -225,7 +265,8 @@ export default function PublishPanel({ initialDeployments }: PublishPanelProps) 
             <h2 className="text-lg font-semibold text-[#081736]">Deploy Hostinger</h2>
             <p className="mt-1 text-sm leading-6 text-[#526078]">
               Publica a última versão salva no editor visual usando release temporária,
-              validação, backup e rollback automático.
+              validação, backup e rollback automático. O deploy preserva o build fiel de
+              site/dist e reaproveita backup recente para acelerar a ativação.
             </p>
           </div>
           <button
@@ -235,7 +276,7 @@ export default function PublishPanel({ initialDeployments }: PublishPanelProps) 
             className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-[#f9d600] px-5 py-3 text-sm font-semibold text-[#081736] transition hover:bg-[#e9ca00] disabled:cursor-not-allowed disabled:opacity-55"
           >
             <UploadCloud className="h-4 w-4" aria-hidden="true" />
-            Publicar no site
+            {isStarting ? "Iniciando..." : "Publicar no site"}
           </button>
         </div>
 
@@ -259,6 +300,36 @@ export default function PublishPanel({ initialDeployments }: PublishPanelProps) 
               <span className="w-fit rounded-full bg-[#081736] px-3 py-1 text-xs font-semibold text-white">
                 {getStatusText(activeDeployment.status)}
               </span>
+            </div>
+
+            <div className="mt-5">
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#6b7280]">
+                  Progresso
+                </p>
+                <p className="text-sm font-semibold tabular-nums text-[#081736]">
+                  {progressPercent}%
+                </p>
+              </div>
+              <div
+                className="mt-2 h-3 overflow-hidden rounded-full bg-[#e7ebf2]"
+                role="progressbar"
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={progressPercent}
+                aria-label="Progresso do deploy Hostinger"
+              >
+                <div
+                  className="h-full rounded-full bg-[#f9d600] transition-[width] duration-500"
+                  style={{ width: `${progressPercent}%` }}
+                />
+              </div>
+              <p className="mt-2 text-sm font-medium text-[#526078]">
+                {getStatusText(activeDeployment.status)}
+                {activeDeployment.status === "uploading" && activeDeployment.totalBytes > 0
+                  ? ` · ${formatBytes(activeDeployment.bytesUploaded)} enviados`
+                  : ""}
+              </p>
             </div>
 
             <div className="mt-5 grid gap-3 md:grid-cols-3">
@@ -308,13 +379,26 @@ export default function PublishPanel({ initialDeployments }: PublishPanelProps) 
                         ? "border-[#f9d600]/60 bg-[#fff8bf] text-[#081736]"
                         : "border-[#10224f]/10 bg-white text-[#526078]"
                     }`}
-                  >
+                    >
                     <span className="h-2 w-2 rounded-full bg-current" />
-                    {stage.label}
+                    {getStageLabel(stage, activeDeployment)}
                   </div>
                 );
               })}
             </div>
+
+            {activeDeployment.warnings.length > 0 ? (
+              <div className="mt-4 grid gap-2">
+                {activeDeployment.warnings.map((warning) => (
+                  <p
+                    key={warning}
+                    className="rounded-md bg-[#eef4ff] px-3 py-2 text-sm font-medium text-[#10224f]"
+                  >
+                    {warning}
+                  </p>
+                ))}
+              </div>
+            ) : null}
 
             {activeDeployment.status === "published" ? (
               <div className="mt-5 rounded-md bg-[#e8f6ef] p-4 text-sm font-medium text-[#146c43]">
@@ -409,7 +493,8 @@ export default function PublishPanel({ initialDeployments }: PublishPanelProps) 
             </div>
             <p className="mt-4 text-sm leading-6 text-[#526078]">
               A versão atual da landing page será enviada para o servidor do IDASAN.
-              A publicação anterior será mantida como backup para recuperação.
+              A publicação anterior será mantida como backup para recuperação; se já houver
+              backup válido dos últimos 7 dias, ele será reutilizado para acelerar o deploy.
             </p>
             <div className="mt-6 flex justify-end gap-3">
               <button
@@ -423,9 +508,12 @@ export default function PublishPanel({ initialDeployments }: PublishPanelProps) 
                 type="button"
                 onClick={startPublish}
                 disabled={isStarting}
-                className="rounded-full bg-[#f9d600] px-4 py-2 text-sm font-semibold text-[#081736] transition hover:bg-[#e9ca00] disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-full bg-[#f9d600] px-4 py-2 text-sm font-semibold text-[#081736] transition hover:bg-[#e9ca00] disabled:opacity-60"
               >
-                Publicar agora
+                {isStarting ? (
+                  <span className="h-3 w-3 animate-spin rounded-full border-2 border-[#081736]/25 border-t-[#081736]" />
+                ) : null}
+                {isStarting ? "Iniciando..." : "Publicar agora"}
               </button>
             </div>
           </div>

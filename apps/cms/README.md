@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CBDAS CMS
 
-## Getting Started
+Painel administrativo Next.js para editar, exportar e publicar a landing page do III CBDAS.
 
-First, run the development server:
+## Desenvolvimento
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm dev:cms
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Build
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+O build do CMS executa o build do site, sincroniza `apps/site/dist`, gera manifesto/ZIP e depois compila o Next.js:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+pnpm build:cms
+```
 
-## Learn More
+## Publicação SFTP
 
-To learn more about Next.js, take a look at the following resources:
+O botão `Publicar` usa a última versão salva em `apps/cms/data/landing.html` e publica por SFTP com release temporária, validação, backup, ativação e rollback automático.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Configure as variáveis abaixo somente no ambiente server-side do CMS:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```env
+SFTP_HOST=
+SFTP_PORT=22
+SFTP_USERNAME=
+SFTP_PRIVATE_KEY=
+SFTP_PRIVATE_KEY_PASSPHRASE=
+SFTP_PASSWORD=
+SFTP_HOST_FINGERPRINT=
+SFTP_REMOTE_PATH=/public_html/iii-congresso-brasileiro-de-direito-administrativo-sancionador
+PUBLIC_LANDING_PAGE_URL=https://idasan.com.br/iii-congresso-brasileiro-de-direito-administrativo-sancionador/
+SFTP_CONNECTION_TIMEOUT=30000
+SFTP_READY_TIMEOUT=30000
+SFTP_KEEP_BACKUPS=3
+```
 
-## Deploy on Vercel
+Preferir `SFTP_PRIVATE_KEY`. Use `SFTP_PASSWORD` apenas quando chave privada não estiver disponível. Nunca use prefixo `NEXT_PUBLIC_` para credenciais.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Produção
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+O fluxo SFTP é uma tarefa longa e requer servidor Node persistente com filesystem gravável para `data/deployments`. Em Vercel/serverless, use um worker persistente externo para executar a publicação.

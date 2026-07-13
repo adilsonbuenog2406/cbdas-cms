@@ -22,6 +22,7 @@
 /public/site-dist/
 /public/site-dist-manifest.json
 /public/exports/
+/data/deployments/
 
 # misc
 .DS_Store

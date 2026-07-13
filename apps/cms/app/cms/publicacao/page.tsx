@@ -10,6 +10,8 @@ import {
   type SiteDistFile,
   type SiteDistManifest,
 } from "../_lib/site-dist";
+import PublishPanel from "./publish-panel";
+import { getDeploymentHistory } from "@/server/publishing/publisher";
 
 export const dynamic = "force-dynamic";
 
@@ -155,6 +157,7 @@ export default async function PublicacaoPage() {
       }
     | undefined;
   let errorMessage = "";
+  const initialDeployments = await getDeploymentHistory().catch(() => []);
 
   try {
     const [manifest, exportZip] = await Promise.all([
@@ -193,6 +196,9 @@ export default async function PublicacaoPage() {
               Build, exportação HTML e pacote para implantação.
             </p>
           </div>
+        </div>
+        <div className="mt-6">
+          <PublishPanel initialDeployments={initialDeployments} />
         </div>
         <div className="mt-6">
           {contentData ? (

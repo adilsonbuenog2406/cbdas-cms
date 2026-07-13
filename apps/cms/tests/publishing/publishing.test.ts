@@ -12,7 +12,10 @@ import {
   validateSftpPort,
 } from "../../server/publishing/config";
 import { createDeploymentManifest } from "../../server/publishing/create-manifest";
-import { resolvePublishRemotePath } from "../../server/publishing/sftp-publisher";
+import {
+  assertRemotePathInsidePublishRoot,
+  resolvePublishRemotePath,
+} from "../../server/publishing/sftp-publisher";
 import { validateRelease } from "../../server/publishing/validate-release";
 import { DeploymentError } from "../../server/publishing/types";
 
@@ -63,6 +66,19 @@ test("resolve public_html para layout de dominios da Hostinger", async () => {
   assert.equal(
     await resolvePublishRemotePath(client, config),
     `domains/idasan.com.br/public_html/${landingSlug}`,
+  );
+});
+
+test("bloqueia escrita fora da pasta da landing", () => {
+  const root = `domains/idasan.com.br/public_html/${landingSlug}`;
+
+  assert.equal(
+    assertRemotePathInsidePublishRoot(root, `${root}/assets/index.css`),
+    `${root}/assets/index.css`,
+  );
+  assert.throws(
+    () => assertRemotePathInsidePublishRoot(root, "domains/idasan.com.br/public_html/.cms-backups"),
+    DeploymentError,
   );
 });
 

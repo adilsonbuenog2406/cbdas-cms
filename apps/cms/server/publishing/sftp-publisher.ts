@@ -19,8 +19,33 @@ type UploadFile = DeploymentManifestFile & {
 
 type RemotePathResolverClient = Pick<Client, "exists">;
 
+const cmsInternalDirs = new Set([".cms-backups", ".cms-deploys", ".cms-failed"]);
+
 function remoteJoin(...parts: string[]) {
   return pathPosix.normalize(pathPosix.join(...parts));
+}
+
+export function assertRemotePathInsidePublishRoot(rootPath: string, remotePath: string) {
+  const normalizedRoot = pathPosix.normalize(rootPath);
+  const normalizedPath = pathPosix.normalize(remotePath);
+
+  if (
+    normalizedPath !== normalizedRoot &&
+    !normalizedPath.startsWith(`${normalizedRoot}/`)
+  ) {
+    throw new DeploymentError(
+      "SFTP_PERMISSION_DENIED",
+      "Publicação bloqueada: o CMS só pode modificar arquivos dentro da pasta da landing page.",
+    );
+  }
+
+  return normalizedPath;
+}
+
+function isCmsInternalRelativePath(relativePath: string) {
+  const [firstSegment] = relativePath.split("/");
+
+  return cmsInternalDirs.has(firstSegment);
 }
 
 function getPublicUrlHostname(publicLandingPageUrl: string) {
@@ -62,16 +87,14 @@ export async function resolvePublishRemotePath(
 }
 
 function getRemoteLayout(remotePath: string, deploymentId: string) {
-  const parentPath = pathPosix.dirname(remotePath);
-  const stagingRoot = remoteJoin(parentPath, ".cms-deploys", landingSlug);
+  const stagingRoot = remoteJoin(remotePath, ".cms-deploys");
   const stagingPath = remoteJoin(stagingRoot, deploymentId);
-  const backupsRoot = remoteJoin(parentPath, ".cms-backups");
+  const backupsRoot = remoteJoin(remotePath, ".cms-backups");
   const timestamp = new Date().toISOString().replaceAll(/[:.]/g, "-");
   const backupPath = remoteJoin(backupsRoot, `${landingSlug}-${timestamp}`);
-  const failedPath = remoteJoin(stagingRoot, `${deploymentId}-failed-${timestamp}`);
+  const failedPath = remoteJoin(remotePath, ".cms-failed", `${deploymentId}-${timestamp}`);
 
   return {
-    parentPath,
     stagingRoot,
     stagingPath,
     backupsRoot,
@@ -109,7 +132,12 @@ async function removeRemotePath(client: Client, remotePath: string) {
   await client.delete(remotePath);
 }
 
-async function listRemoteFiles(client: Client, remotePath: string, rootPath = remotePath) {
+async function listRemoteFiles(
+  client: Client,
+  remotePath: string,
+  rootPath = remotePath,
+  options: { skipCmsInternal?: boolean } = {},
+) {
   const exists = await client.exists(remotePath);
 
   if (!exists) {
@@ -125,20 +153,30 @@ async function listRemoteFiles(client: Client, remotePath: string, rootPath = re
 
   for (const entry of entries) {
     const entryPath = remoteJoin(remotePath, entry.name);
+    const relativePath = pathPosix.relative(rootPath, entryPath);
+
+    if (options.skipCmsInternal && isCmsInternalRelativePath(relativePath)) {
+      continue;
+    }
 
     if (entry.type === "d") {
-      files.push(...(await listRemoteFiles(client, entryPath, rootPath)));
+      files.push(...(await listRemoteFiles(client, entryPath, rootPath, options)));
     } else if (entry.type === "-") {
-      files.push(pathPosix.relative(rootPath, entryPath));
+      files.push(relativePath);
     }
   }
 
   return files;
 }
 
-async function copyRemoteDirectory(client: Client, sourcePath: string, targetPath: string) {
+async function copyRemoteDirectory(
+  client: Client,
+  sourcePath: string,
+  targetPath: string,
+  options: { skipCmsInternal?: boolean } = {},
+) {
   await ensureRemoteDirectory(client, targetPath);
-  const files = await listRemoteFiles(client, sourcePath);
+  const files = await listRemoteFiles(client, sourcePath, sourcePath, options);
 
   for (const relativePath of files) {
     const sourceFilePath = remoteJoin(sourcePath, relativePath);
@@ -213,36 +251,24 @@ async function uploadFiles({
   await Promise.all(Array.from({ length: concurrency }, () => worker()));
 }
 
-async function activateAtomic({
-  callbacks,
+async function removeObsoletePublishedFiles({
   client,
-  config,
-  layout,
+  files,
+  remoteRoot,
 }: {
-  callbacks: PublishCallbacks;
   client: Client;
-  config: SftpPublishConfig;
-  layout: ReturnType<typeof getRemoteLayout>;
+  files: UploadFile[];
+  remoteRoot: string;
 }) {
-  await callbacks.onStage("backing_up");
-  const hasCurrentSite = await remoteExists(client, config.remotePath);
+  const nextFiles = new Set(files.map((file) => file.relativePath));
+  const existingFiles = await listRemoteFiles(client, remoteRoot, remoteRoot, {
+    skipCmsInternal: true,
+  });
 
-  if (hasCurrentSite) {
-    await removeRemotePath(client, layout.backupPath).catch(() => {});
-    await client.rename(config.remotePath, layout.backupPath);
-    await callbacks.onBackupPath(layout.backupPath);
-  } else {
-    await callbacks.onBackupPath(null);
-  }
-
-  await callbacks.onStage("activating");
-  await client.rename(layout.stagingPath, config.remotePath);
-
-  if (!(await remoteExists(client, remoteJoin(config.remotePath, "index.html")))) {
-    throw new DeploymentError(
-      "REMOTE_ACTIVATION_FAILED",
-      "index.html não existe no destino publicado.",
-    );
+  for (const existingFile of existingFiles) {
+    if (!nextFiles.has(existingFile)) {
+      await client.delete(remoteJoin(remoteRoot, existingFile)).catch(() => {});
+    }
   }
 }
 
@@ -264,22 +290,16 @@ async function activateNonAtomic({
 
   if (await remoteExists(client, config.remotePath)) {
     await removeRemotePath(client, layout.backupPath).catch(() => {});
-    await copyRemoteDirectory(client, config.remotePath, layout.backupPath);
+    await copyRemoteDirectory(client, config.remotePath, layout.backupPath, {
+      skipCmsInternal: true,
+    });
     await callbacks.onBackupPath(layout.backupPath);
   }
 
   await callbacks.onStage("activating");
   await ensureRemoteDirectory(client, config.remotePath);
   await uploadFiles({ client, files, remoteRoot: config.remotePath, callbacks });
-
-  const nextFiles = new Set(files.map((file) => file.relativePath));
-  const existingFiles = await listRemoteFiles(client, config.remotePath);
-
-  for (const existingFile of existingFiles) {
-    if (!nextFiles.has(existingFile)) {
-      await client.delete(remoteJoin(config.remotePath, existingFile)).catch(() => {});
-    }
-  }
+  await removeObsoletePublishedFiles({ client, files, remoteRoot: config.remotePath });
 }
 
 export async function rollbackRemoteDeployment({
@@ -297,18 +317,33 @@ export async function rollbackRemoteDeployment({
     throw new DeploymentError("ROLLBACK_FAILED", "Não há backup para rollback.");
   }
 
-  if (await remoteExists(client, config.remotePath)) {
-    await removeRemotePath(client, failedPath).catch(() => {});
-    await client.rename(config.remotePath, failedPath).catch(async () => {
-      await removeRemotePath(client, config.remotePath);
-    });
-  }
+  config.remotePath = await resolvePublishRemotePath(client, config);
 
-  await client.rename(backupPath, config.remotePath);
+  assertRemotePathInsidePublishRoot(config.remotePath, backupPath);
+  assertRemotePathInsidePublishRoot(config.remotePath, failedPath);
+
+  await removeRemotePath(client, failedPath).catch(() => {});
+  await copyRemoteDirectory(client, config.remotePath, failedPath, {
+    skipCmsInternal: true,
+  }).catch(() => {});
+  await copyRemoteDirectory(client, backupPath, config.remotePath);
+
+  const backupFiles = (await listRemoteFiles(client, backupPath)).map((relativePath) => ({
+    relativePath,
+    localPath: "",
+    size: 0,
+    sha256: "",
+    mimeType: "",
+  }));
+  await removeObsoletePublishedFiles({
+    client,
+    files: backupFiles,
+    remoteRoot: config.remotePath,
+  });
 }
 
 export async function cleanupOldBackups(client: Client, config: SftpPublishConfig) {
-  const backupRoot = remoteJoin(pathPosix.dirname(config.remotePath), ".cms-backups");
+  const backupRoot = remoteJoin(config.remotePath, ".cms-backups");
 
   if (!(await remoteExists(client, backupRoot))) {
     return;
@@ -359,6 +394,16 @@ export async function publishReleaseViaSftp({
     localPath: manifestFilePath,
   });
 
+  for (const scopedPath of [
+    layout.stagingRoot,
+    layout.stagingPath,
+    layout.backupsRoot,
+    layout.backupPath,
+    layout.failedPath,
+  ]) {
+    assertRemotePathInsidePublishRoot(config.remotePath, scopedPath);
+  }
+
   await callbacks.onStage("uploading");
   await ensureRemoteDirectory(client, layout.stagingRoot);
   await ensureRemoteDirectory(client, layout.backupsRoot);
@@ -375,21 +420,7 @@ export async function publishReleaseViaSftp({
     );
   }
 
-  try {
-    await callbacks.onMode("atomic");
-    await activateAtomic({ callbacks, client, config, layout });
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "";
-
-    if (message.toLowerCase().includes("permission")) {
-      throw new DeploymentError(
-        "SFTP_PERMISSION_DENIED",
-        "Permissão negada ao ativar a publicação.",
-      );
-    }
-
-    await activateNonAtomic({ callbacks, client, config, files, layout });
-  }
+  await activateNonAtomic({ callbacks, client, config, files, layout });
 
   return layout;
 }

@@ -111,6 +111,65 @@ export function normalizePrivateKey(value: string | undefined) {
   return value?.replaceAll("\\n", "\n").trim();
 }
 
+export function normalizeSftpHost(value: string | undefined) {
+  const host = value?.trim();
+
+  if (!host) {
+    return "";
+  }
+
+  if (!host.includes("://")) {
+    return host;
+  }
+
+  try {
+    const parsedUrl = new URL(host);
+
+    if (parsedUrl.protocol === "ftp:") {
+      throw new DeploymentError(
+        "SFTP_CONFIGURATION_INVALID",
+        "HOSTINGER_SFTP_HOST deve conter apenas o IP ou dominio, sem ftp://. SFTP nao usa protocolo FTP.",
+      );
+    }
+
+    if (parsedUrl.protocol !== "sftp:" && parsedUrl.protocol !== "ssh:") {
+      throw new DeploymentError(
+        "SFTP_CONFIGURATION_INVALID",
+        "HOSTINGER_SFTP_HOST deve conter apenas o IP ou dominio do servidor SFTP.",
+      );
+    }
+
+    return parsedUrl.hostname;
+  } catch (error) {
+    if (error instanceof DeploymentError) {
+      throw error;
+    }
+
+    throw new DeploymentError(
+      "SFTP_CONFIGURATION_INVALID",
+      "HOSTINGER_SFTP_HOST invalido. Use somente o IP ou dominio, por exemplo 147.93.38.36.",
+    );
+  }
+}
+
+export function validateSftpPort(port: number) {
+  if (port === 21) {
+    throw new DeploymentError(
+      "SFTP_CONFIGURATION_INVALID",
+      "HOSTINGER_SFTP_PORT=21 e FTP, nao SFTP. Para SFTP na Hostinger use a porta SSH/SFTP do hPanel, normalmente 65002.",
+    );
+  }
+
+  if (!Number.isInteger(port) || port <= 0 || port > 65535) {
+    throw new DeploymentError(
+      "SFTP_CONFIGURATION_INVALID",
+      "Porta SFTP invalida.",
+    );
+  }
+
+  return port;
+}
+
 export function validateRemotePath(remotePath: string) {
   const normalizedPath = path.posix.normalize(remotePath);
 
@@ -140,10 +199,14 @@ export function getSftpPublishConfig(): SftpPublishConfig {
     );
   }
 
-  const host = getEnvValue("SFTP_HOST", "HOSTINGER_SFTP_HOST")?.trim();
+  const host = normalizeSftpHost(getEnvValue("SFTP_HOST", "HOSTINGER_SFTP_HOST"));
   const username = getEnvValue("SFTP_USERNAME", "HOSTINGER_SFTP_USER")?.trim();
   const privateKey = normalizePrivateKey(getEnvValue("SFTP_PRIVATE_KEY"));
-  const password = getEnvValue("SFTP_PASSWORD", "HOSTINGER_SFTP_PASSWORD");
+  const password = getEnvValue(
+    "SFTP_PASSWORD",
+    "HOSTINGER_SFTP_SSH",
+    "HOSTINGER_SFTP_PASSWORD",
+  );
 
   if (!host || !username || (!privateKey && !password)) {
     throw new DeploymentError(
@@ -168,7 +231,7 @@ export function getSftpPublishConfig(): SftpPublishConfig {
 
   return {
     host,
-    port: getNumberEnv("SFTP_PORT", 22, "HOSTINGER_SFTP_PORT"),
+    port: validateSftpPort(getNumberEnv("SFTP_PORT", 22, "HOSTINGER_SFTP_PORT")),
     username,
     password: privateKey ? undefined : password,
     privateKey,

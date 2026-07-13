@@ -4,7 +4,12 @@ import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
-import { landingSlug, validateRemotePath } from "../../server/publishing/config";
+import {
+  landingSlug,
+  normalizeSftpHost,
+  validateRemotePath,
+  validateSftpPort,
+} from "../../server/publishing/config";
 import { createDeploymentManifest } from "../../server/publishing/create-manifest";
 import { validateRelease } from "../../server/publishing/validate-release";
 import { DeploymentError } from "../../server/publishing/types";
@@ -31,6 +36,15 @@ test("bloqueia caminho remoto perigoso", () => {
   assert.throws(() => validateRemotePath("/public_html"), DeploymentError);
   assert.throws(() => validateRemotePath(`/public_html/../${landingSlug}`), DeploymentError);
   assert.throws(() => validateRemotePath(`/public_html/outro-site`), DeploymentError);
+});
+
+test("bloqueia host SFTP com protocolo FTP", () => {
+  assert.throws(() => normalizeSftpHost("ftp://147.93.38.36"), DeploymentError);
+});
+
+test("bloqueia porta FTP para publicacao SFTP", () => {
+  assert.throws(() => validateSftpPort(21), DeploymentError);
+  assert.equal(validateSftpPort(65002), 65002);
 });
 
 test("cria manifesto com sha256 e tamanhos", async () => {

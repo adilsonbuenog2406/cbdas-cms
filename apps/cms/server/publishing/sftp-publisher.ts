@@ -222,33 +222,31 @@ async function uploadFiles({
 }) {
   let uploadedFiles = 0;
   let uploadedBytes = 0;
-  let nextIndex = 0;
-  const concurrency = 3;
 
-  async function worker() {
-    while (nextIndex < files.length) {
-      const file = files[nextIndex];
-      nextIndex += 1;
+  const directories = Array.from(
+    new Set(files.map((file) => pathPosix.dirname(remoteJoin(remoteRoot, file.relativePath)))),
+  ).sort((first, second) => first.localeCompare(second));
 
-      const remotePath = remoteJoin(remoteRoot, file.relativePath);
-      await ensureRemoteDirectory(client, pathPosix.dirname(remotePath));
-      await client.fastPut(file.localPath, remotePath);
-      const remoteStats = await client.stat(remotePath);
-
-      if (Number(remoteStats.size) !== file.size) {
-        throw new DeploymentError(
-          "REMOTE_VERIFICATION_FAILED",
-          `Tamanho remoto divergente para ${file.relativePath}.`,
-        );
-      }
-
-      uploadedFiles += 1;
-      uploadedBytes += file.size;
-      await callbacks.onUploadProgress(uploadedFiles, uploadedBytes);
-    }
+  for (const directory of directories) {
+    await ensureRemoteDirectory(client, directory);
   }
 
-  await Promise.all(Array.from({ length: concurrency }, () => worker()));
+  for (const file of files) {
+    const remotePath = remoteJoin(remoteRoot, file.relativePath);
+    await client.fastPut(file.localPath, remotePath);
+    const remoteStats = await client.stat(remotePath);
+
+    if (Number(remoteStats.size) !== file.size) {
+      throw new DeploymentError(
+        "REMOTE_VERIFICATION_FAILED",
+        `Tamanho remoto divergente para ${file.relativePath}.`,
+      );
+    }
+
+    uploadedFiles += 1;
+    uploadedBytes += file.size;
+    await callbacks.onUploadProgress(uploadedFiles, uploadedBytes);
+  }
 }
 
 async function removeObsoletePublishedFiles({

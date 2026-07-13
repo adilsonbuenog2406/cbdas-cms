@@ -50,11 +50,11 @@ function formatBytes(size: number) {
   return `${nextSize.toFixed(nextSize >= 10 ? 1 : 2)} ${units[unitIndex]}`;
 }
 
-function formatDuration(record: DeploymentRecord) {
-  const endTime = record.completedAt ? new Date(record.completedAt).getTime() : Date.now();
+function formatDuration(record: DeploymentRecord, now: number | null) {
+  const endTime = record.completedAt ? new Date(record.completedAt).getTime() : now;
   const startTime = new Date(record.startedAt).getTime();
 
-  if (!Number.isFinite(startTime)) {
+  if (!Number.isFinite(startTime) || !endTime) {
     return "-";
   }
 
@@ -89,6 +89,7 @@ export default function PublishPanel({ initialDeployments }: PublishPanelProps) 
   const [isConfirming, setIsConfirming] = useState(false);
   const [error, setError] = useState("");
   const [isStarting, setIsStarting] = useState(false);
+  const [now, setNow] = useState<number | null>(null);
 
   const activeDeployment = useMemo(
     () => deployments.find((deployment) => deployment.id === activeDeploymentId) ?? null,
@@ -192,6 +193,19 @@ export default function PublishPanel({ initialDeployments }: PublishPanelProps) 
   }, []);
 
   useEffect(() => {
+    const updateNow = () => {
+      setNow(Date.now());
+    };
+    const timeout = window.setTimeout(updateNow, 0);
+    const interval = window.setInterval(updateNow, 1000);
+
+    return () => {
+      window.clearTimeout(timeout);
+      window.clearInterval(interval);
+    };
+  }, []);
+
+  useEffect(() => {
     if (!activeDeploymentId) {
       return undefined;
     }
@@ -270,7 +284,7 @@ export default function PublishPanel({ initialDeployments }: PublishPanelProps) 
                   Duração
                 </p>
                 <p className="mt-1 text-sm font-semibold text-[#081736]">
-                  {formatDuration(activeDeployment)}
+                  {formatDuration(activeDeployment, now)}
                 </p>
               </div>
             </div>
@@ -367,7 +381,7 @@ export default function PublishPanel({ initialDeployments }: PublishPanelProps) 
                 </button>
               </div>
               <p className="mt-2 text-xs text-[#526078]">
-                {deployment.totalFiles} arquivos · {formatDuration(deployment)}
+                {deployment.totalFiles} arquivos · {formatDuration(deployment, now)}
               </p>
               {deployment.backupPath && deployment.status === "published" ? (
                 <button

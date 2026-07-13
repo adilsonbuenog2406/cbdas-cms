@@ -16,7 +16,7 @@ import {
   assertRemotePathInsidePublishRoot,
   resolvePublishRemotePath,
 } from "../../server/publishing/sftp-publisher";
-import { rewritePublishedHtml } from "../../server/publishing/build-release";
+import { injectDeploymentMeta } from "../../server/publishing/build-release";
 import { validateRelease } from "../../server/publishing/validate-release";
 import { DeploymentError } from "../../server/publishing/types";
 
@@ -88,18 +88,17 @@ test("bloqueia escrita fora da pasta da landing", () => {
   );
 });
 
-test("injeta runtime do CMS publicado e corrige assets em CSS", () => {
-  const html = rewritePublishedHtml(
-    `<!doctype html><html><head><style>[data-cbdas-shortcuts-art-layer="soft"]{background-image:url("/assets/elementosbrasilia2-test.png")}</style></head><body><header class="fixed"><button class="header-desktop-toggle" aria-expanded="false">Menu</button></header></body></html>`,
+test("preserva o index do site-dist e injeta apenas o deployment id", () => {
+  const html = injectDeploymentMeta(
+    `<!doctype html><html><head><script type="module" crossorigin src="./assets/index-test.js"></script><link rel="stylesheet" crossorigin href="./assets/index-test.css"></head><body><div id="root"></div></body></html>`,
     "deployment-test",
   );
 
   assert.match(html, /cms-deployment-id/);
-  assert.match(html, /cms-published-runtime-style/);
-  assert.match(html, /cms-published-runtime-script/);
-  assert.match(html, /header\.fixed\s*\{/);
-  assert.match(html, /position:\s*absolute\s*!important/);
-  assert.match(html, /url\("assets\/elementosbrasilia2-test\.png"\)/);
+  assert.match(html, /type="module" crossorigin src="\.\/assets\/index-test\.js"/);
+  assert.match(html, /href="\.\/assets\/index-test\.css"/);
+  assert.doesNotMatch(html, /cms-published-runtime-style/);
+  assert.doesNotMatch(html, /cms-published-runtime-script/);
 });
 
 test("cria manifesto com sha256 e tamanhos", async () => {

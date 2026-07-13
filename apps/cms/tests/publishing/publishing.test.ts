@@ -72,12 +72,17 @@ test("resolve public_html para layout de dominios da Hostinger", async () => {
 test("bloqueia escrita fora da pasta da landing", () => {
   const root = `domains/idasan.com.br/public_html/${landingSlug}`;
 
+  assert.equal(assertRemotePathInsidePublishRoot(root, root), root);
   assert.equal(
     assertRemotePathInsidePublishRoot(root, `${root}/assets/index.css`),
     `${root}/assets/index.css`,
   );
   assert.throws(
     () => assertRemotePathInsidePublishRoot(root, "domains/idasan.com.br/public_html/.cms-backups"),
+    DeploymentError,
+  );
+  assert.throws(
+    () => assertRemotePathInsidePublishRoot(root, `${root}-backup/assets/index.css`),
     DeploymentError,
   );
 });

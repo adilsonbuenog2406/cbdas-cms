@@ -103,33 +103,38 @@ function getRemoteLayout(remotePath: string, deploymentId: string) {
   };
 }
 
-async function ensureRemoteDirectory(client: Client, remotePath: string) {
-  await client.mkdir(remotePath, true);
+async function ensureRemoteDirectory(
+  client: Client,
+  publishRoot: string,
+  remotePath: string,
+) {
+  await client.mkdir(assertRemotePathInsidePublishRoot(publishRoot, remotePath), true);
 }
 
 async function remoteExists(client: Client, remotePath: string) {
   return Boolean(await client.exists(remotePath));
 }
 
-async function removeRemotePath(client: Client, remotePath: string) {
-  const exists = await client.exists(remotePath);
+async function removeRemotePath(client: Client, publishRoot: string, remotePath: string) {
+  const safeRemotePath = assertRemotePathInsidePublishRoot(publishRoot, remotePath);
+  const exists = await client.exists(safeRemotePath);
 
   if (!exists) {
     return;
   }
 
   if (exists === "d") {
-    const entries = await client.list(remotePath);
+    const entries = await client.list(safeRemotePath);
 
     for (const entry of entries) {
-      await removeRemotePath(client, remoteJoin(remotePath, entry.name));
+      await removeRemotePath(client, publishRoot, remoteJoin(safeRemotePath, entry.name));
     }
 
-    await client.rmdir(remotePath);
+    await client.rmdir(safeRemotePath);
     return;
   }
 
-  await client.delete(remotePath);
+  await client.delete(safeRemotePath);
 }
 
 async function listRemoteFiles(
@@ -171,19 +176,23 @@ async function listRemoteFiles(
 
 async function copyRemoteDirectory(
   client: Client,
+  publishRoot: string,
   sourcePath: string,
   targetPath: string,
   options: { skipCmsInternal?: boolean } = {},
 ) {
-  await ensureRemoteDirectory(client, targetPath);
+  assertRemotePathInsidePublishRoot(publishRoot, sourcePath);
+  await ensureRemoteDirectory(client, publishRoot, targetPath);
   const files = await listRemoteFiles(client, sourcePath, sourcePath, options);
 
   for (const relativePath of files) {
     const sourceFilePath = remoteJoin(sourcePath, relativePath);
     const targetFilePath = remoteJoin(targetPath, relativePath);
-    await ensureRemoteDirectory(client, pathPosix.dirname(targetFilePath));
+    assertRemotePathInsidePublishRoot(publishRoot, sourceFilePath);
+    assertRemotePathInsidePublishRoot(publishRoot, targetFilePath);
+    await ensureRemoteDirectory(client, publishRoot, pathPosix.dirname(targetFilePath));
     const file = await client.get(sourceFilePath);
-    await client.put(file, targetFilePath);
+    await client.put(file, assertRemotePathInsidePublishRoot(publishRoot, targetFilePath));
   }
 }
 
@@ -213,11 +222,13 @@ async function uploadFiles({
   client,
   files,
   remoteRoot,
+  publishRoot,
   callbacks,
 }: {
   client: Client;
   files: UploadFile[];
   remoteRoot: string;
+  publishRoot: string;
   callbacks: PublishCallbacks;
 }) {
   let uploadedFiles = 0;
@@ -228,13 +239,14 @@ async function uploadFiles({
   ).sort((first, second) => first.localeCompare(second));
 
   for (const directory of directories) {
-    await ensureRemoteDirectory(client, directory);
+    await ensureRemoteDirectory(client, publishRoot, directory);
   }
 
   for (const file of files) {
     const remotePath = remoteJoin(remoteRoot, file.relativePath);
-    await client.fastPut(file.localPath, remotePath);
-    const remoteStats = await client.stat(remotePath);
+    const safeRemotePath = assertRemotePathInsidePublishRoot(publishRoot, remotePath);
+    await client.fastPut(file.localPath, safeRemotePath);
+    const remoteStats = await client.stat(safeRemotePath);
 
     if (Number(remoteStats.size) !== file.size) {
       throw new DeploymentError(
@@ -253,10 +265,12 @@ async function removeObsoletePublishedFiles({
   client,
   files,
   remoteRoot,
+  publishRoot,
 }: {
   client: Client;
   files: UploadFile[];
   remoteRoot: string;
+  publishRoot: string;
 }) {
   const nextFiles = new Set(files.map((file) => file.relativePath));
   const existingFiles = await listRemoteFiles(client, remoteRoot, remoteRoot, {
@@ -265,7 +279,14 @@ async function removeObsoletePublishedFiles({
 
   for (const existingFile of existingFiles) {
     if (!nextFiles.has(existingFile)) {
-      await client.delete(remoteJoin(remoteRoot, existingFile)).catch(() => {});
+      await client
+        .delete(
+          assertRemotePathInsidePublishRoot(
+            publishRoot,
+            remoteJoin(remoteRoot, existingFile),
+          ),
+        )
+        .catch(() => {});
     }
   }
 }
@@ -287,17 +308,28 @@ async function activateNonAtomic({
   await callbacks.onStage("backing_up");
 
   if (await remoteExists(client, config.remotePath)) {
-    await removeRemotePath(client, layout.backupPath).catch(() => {});
-    await copyRemoteDirectory(client, config.remotePath, layout.backupPath, {
+    await removeRemotePath(client, config.remotePath, layout.backupPath).catch(() => {});
+    await copyRemoteDirectory(client, config.remotePath, config.remotePath, layout.backupPath, {
       skipCmsInternal: true,
     });
     await callbacks.onBackupPath(layout.backupPath);
   }
 
   await callbacks.onStage("activating");
-  await ensureRemoteDirectory(client, config.remotePath);
-  await uploadFiles({ client, files, remoteRoot: config.remotePath, callbacks });
-  await removeObsoletePublishedFiles({ client, files, remoteRoot: config.remotePath });
+  await ensureRemoteDirectory(client, config.remotePath, config.remotePath);
+  await uploadFiles({
+    client,
+    files,
+    remoteRoot: config.remotePath,
+    publishRoot: config.remotePath,
+    callbacks,
+  });
+  await removeObsoletePublishedFiles({
+    client,
+    files,
+    remoteRoot: config.remotePath,
+    publishRoot: config.remotePath,
+  });
 }
 
 export async function rollbackRemoteDeployment({
@@ -320,11 +352,11 @@ export async function rollbackRemoteDeployment({
   assertRemotePathInsidePublishRoot(config.remotePath, backupPath);
   assertRemotePathInsidePublishRoot(config.remotePath, failedPath);
 
-  await removeRemotePath(client, failedPath).catch(() => {});
-  await copyRemoteDirectory(client, config.remotePath, failedPath, {
+  await removeRemotePath(client, config.remotePath, failedPath).catch(() => {});
+  await copyRemoteDirectory(client, config.remotePath, config.remotePath, failedPath, {
     skipCmsInternal: true,
   }).catch(() => {});
-  await copyRemoteDirectory(client, backupPath, config.remotePath);
+  await copyRemoteDirectory(client, config.remotePath, backupPath, config.remotePath);
 
   const backupFiles = (await listRemoteFiles(client, backupPath)).map((relativePath) => ({
     relativePath,
@@ -337,10 +369,12 @@ export async function rollbackRemoteDeployment({
     client,
     files: backupFiles,
     remoteRoot: config.remotePath,
+    publishRoot: config.remotePath,
   });
 }
 
 export async function cleanupOldBackups(client: Client, config: SftpPublishConfig) {
+  config.remotePath = await resolvePublishRemotePath(client, config);
   const backupRoot = remoteJoin(config.remotePath, ".cms-backups");
 
   if (!(await remoteExists(client, backupRoot))) {
@@ -352,15 +386,17 @@ export async function cleanupOldBackups(client: Client, config: SftpPublishConfi
     .sort((first, second) => second.name.localeCompare(first.name));
 
   for (const backup of backups.slice(config.keepBackups)) {
-    await removeRemotePath(client, remoteJoin(backupRoot, backup.name)).catch((error) => {
-      console.warn(
-        JSON.stringify({
-          type: "cms_deployment_backup_cleanup_warning",
-          backup: backup.name,
-          message: error instanceof Error ? error.message : "Falha ao remover backup antigo.",
-        }),
-      );
-    });
+    await removeRemotePath(client, config.remotePath, remoteJoin(backupRoot, backup.name)).catch(
+      (error) => {
+        console.warn(
+          JSON.stringify({
+            type: "cms_deployment_backup_cleanup_warning",
+            backup: backup.name,
+            message: error instanceof Error ? error.message : "Falha ao remover backup antigo.",
+          }),
+        );
+      },
+    );
   }
 }
 
@@ -403,11 +439,17 @@ export async function publishReleaseViaSftp({
   }
 
   await callbacks.onStage("uploading");
-  await ensureRemoteDirectory(client, layout.stagingRoot);
-  await ensureRemoteDirectory(client, layout.backupsRoot);
-  await removeRemotePath(client, layout.stagingPath).catch(() => {});
-  await ensureRemoteDirectory(client, layout.stagingPath);
-  await uploadFiles({ client, files, remoteRoot: layout.stagingPath, callbacks });
+  await ensureRemoteDirectory(client, config.remotePath, layout.stagingRoot);
+  await ensureRemoteDirectory(client, config.remotePath, layout.backupsRoot);
+  await removeRemotePath(client, config.remotePath, layout.stagingPath).catch(() => {});
+  await ensureRemoteDirectory(client, config.remotePath, layout.stagingPath);
+  await uploadFiles({
+    client,
+    files,
+    remoteRoot: layout.stagingPath,
+    publishRoot: config.remotePath,
+    callbacks,
+  });
 
   await callbacks.onStage("verifying");
 

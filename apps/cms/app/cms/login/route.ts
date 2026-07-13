@@ -73,7 +73,7 @@ export async function POST(request: Request) {
   cookieStore.set(sessionCookieName, "ok", {
     httpOnly: true,
     sameSite: "lax",
-    path: "/cms",
+    path: "/",
   });
 
   redirect("/cms");

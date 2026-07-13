@@ -116,6 +116,12 @@ export default function PublishPanel({ initialDeployments }: PublishPanelProps) 
     }
   }
 
+  async function refreshRootSession() {
+    await fetch("/cms/session/refresh", {
+      method: "POST",
+    }).catch(() => {});
+  }
+
   async function pollDeployment(deploymentId: string) {
     const response = await fetch(`/api/cms/publish/${deploymentId}`, { cache: "no-store" });
 
@@ -145,6 +151,7 @@ export default function PublishPanel({ initialDeployments }: PublishPanelProps) 
     setIsStarting(true);
 
     try {
+      await refreshRootSession();
       const response = await fetch("/api/cms/publish", { method: "POST" });
       const payload = (await response.json().catch(() => ({}))) as {
         deploymentId?: string;
@@ -179,6 +186,10 @@ export default function PublishPanel({ initialDeployments }: PublishPanelProps) 
     setActiveDeploymentId(deploymentId);
     await refreshHistory();
   }
+
+  useEffect(() => {
+    void refreshRootSession();
+  }, []);
 
   useEffect(() => {
     if (!activeDeploymentId) {

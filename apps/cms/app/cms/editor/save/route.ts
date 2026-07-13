@@ -37,6 +37,12 @@ export async function POST(request: Request) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  cookieStore.set(sessionCookieName, "ok", {
+    httpOnly: true,
+    sameSite: "lax",
+    path: "/",
+  });
+
   const payload = (await request.json()) as {
     html?: unknown;
     css?: unknown;

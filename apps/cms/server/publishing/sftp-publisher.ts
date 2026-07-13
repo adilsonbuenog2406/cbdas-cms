@@ -17,8 +17,48 @@ type UploadFile = DeploymentManifestFile & {
   localPath: string;
 };
 
+type RemotePathResolverClient = Pick<Client, "exists">;
+
 function remoteJoin(...parts: string[]) {
   return pathPosix.normalize(pathPosix.join(...parts));
+}
+
+function getPublicUrlHostname(publicLandingPageUrl: string) {
+  try {
+    return new URL(publicLandingPageUrl).hostname;
+  } catch {
+    return "";
+  }
+}
+
+export async function resolvePublishRemotePath(
+  client: RemotePathResolverClient,
+  config: SftpPublishConfig,
+) {
+  const remotePath = pathPosix.normalize(config.remotePath);
+
+  if (!remotePath.startsWith("/public_html/")) {
+    return remotePath;
+  }
+
+  if (await client.exists("/public_html")) {
+    return remotePath;
+  }
+
+  const hostname = getPublicUrlHostname(config.publicLandingPageUrl);
+
+  if (!hostname) {
+    return remotePath;
+  }
+
+  const publicHtmlSuffix = remotePath.slice("/public_html".length);
+  const hostingerPublicHtml = remoteJoin("domains", hostname, "public_html");
+
+  if (await client.exists(hostingerPublicHtml)) {
+    return remoteJoin(hostingerPublicHtml, publicHtmlSuffix);
+  }
+
+  return remotePath;
 }
 
 function getRemoteLayout(remotePath: string, deploymentId: string) {
@@ -306,6 +346,7 @@ export async function publishReleaseViaSftp({
   manifest: DeploymentManifest;
   releaseDir: string;
 }) {
+  config.remotePath = await resolvePublishRemotePath(client, config);
   const layout = getRemoteLayout(config.remotePath, deploymentId);
   const manifestFilePath = path.join(releaseDir, "deployment-manifest.json");
   const manifestStats = await stat(manifestFilePath);

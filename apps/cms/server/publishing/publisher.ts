@@ -25,7 +25,17 @@ import { logDeploymentEvent } from "./logger";
 import { DeploymentError, type DeploymentErrorCode } from "./types";
 
 function getErrorCode(error: unknown): DeploymentErrorCode {
-  return error instanceof DeploymentError ? error.code : "REMOTE_UPLOAD_FAILED";
+  if (error instanceof DeploymentError) {
+    return error.code;
+  }
+
+  const message = error instanceof Error ? error.message.toLowerCase() : "";
+
+  if (message.includes("permission denied")) {
+    return "SFTP_PERMISSION_DENIED";
+  }
+
+  return "REMOTE_UPLOAD_FAILED";
 }
 
 function getSafeErrorMessage(error: unknown) {

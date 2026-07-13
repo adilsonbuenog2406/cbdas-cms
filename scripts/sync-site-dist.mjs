@@ -1,9 +1,11 @@
 import { copyFile, mkdir, readdir, readFile, rm, stat, writeFile } from "node:fs/promises";
+import { createRequire } from "node:module";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import JSZip from "jszip";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const requireFromCms = createRequire(path.join(repoRoot, "apps/cms/package.json"));
+const JSZip = requireFromCms("jszip");
 const siteDistDir = path.join(repoRoot, "apps/site/dist");
 const cmsPublicDir = path.join(repoRoot, "apps/cms/public");
 const syncedDistDir = path.join(cmsPublicDir, "site-dist");

@@ -19,6 +19,9 @@
 
 # production
 /build
+/public/site-dist/
+/public/site-dist-manifest.json
+/public/exports/
 
 # misc
 .DS_Store

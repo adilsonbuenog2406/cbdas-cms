@@ -3,15 +3,16 @@
   "private": true,
   "scripts": {
     "dev": "pnpm --filter site dev",
-    "build": "pnpm --filter site build",
+    "build": "pnpm build:cms",
     "preview": "pnpm --filter site preview",
     "lint": "pnpm --filter site lint",
     "dev:site": "pnpm --filter site dev",
     "build:site": "pnpm --filter site build",
+    "sync:site-dist": "node scripts/sync-site-dist.mjs",
     "preview:site": "pnpm --filter site preview",
     "lint:site": "pnpm --filter site lint",
     "dev:cms": "pnpm --filter cms dev",
-    "build:cms": "pnpm --filter cms build",
+    "build:cms": "pnpm build:site && pnpm sync:site-dist && pnpm --filter cms exec next build --webpack",
     "start:cms": "pnpm --filter cms start",
     "lint:cms": "pnpm --filter cms lint"
   },

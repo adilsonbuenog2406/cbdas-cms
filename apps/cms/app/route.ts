@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
-const siteDistDir = path.resolve(process.cwd(), "../site/dist");
+const siteDistDir = path.resolve(process.cwd(), "public/site-dist");
 const publishedLandingPath = path.resolve(process.cwd(), "data/landing.html");
 
 async function renderSiteHtml() {

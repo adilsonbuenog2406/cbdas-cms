@@ -29,14 +29,14 @@ function PublicacaoError({ message }: { message: string }) {
 function PublicacaoContent({
   exportZip,
   htmlFiles,
-  indexFile,
   manifest,
 }: {
   exportZip: ExportZipInfo;
   htmlFiles: SiteDistFile[];
-  indexFile: SiteDistFile | undefined;
   manifest: SiteDistManifest;
 }) {
+  const savedPreviewUrl = "/cms/preview";
+
   return (
     <>
       <section className="grid gap-4 md:grid-cols-3">
@@ -71,31 +71,25 @@ function PublicacaoContent({
           <div className="flex flex-col gap-3 border-b border-[#10224f]/10 p-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-lg font-semibold text-[#081736]">Preview sincronizado</h2>
-              <p className="text-sm text-[#526078]">/site-dist/index.html</p>
+              <p className="text-sm text-[#526078]">
+                Última versão salva no editor visual
+              </p>
             </div>
-            {indexFile ? (
-              <a
-                href={indexFile.publicUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-[#f9d600] px-4 py-2 text-sm font-semibold text-[#081736] transition hover:bg-[#e9ca00] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#10224f]/30"
-              >
-                Abrir em nova aba
-                <ExternalLink className="h-4 w-4" aria-hidden="true" />
-              </a>
-            ) : null}
+            <a
+              href={savedPreviewUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-[#f9d600] px-4 py-2 text-sm font-semibold text-[#081736] transition hover:bg-[#e9ca00] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#10224f]/30"
+            >
+              Abrir em nova aba
+              <ExternalLink className="h-4 w-4" aria-hidden="true" />
+            </a>
           </div>
-          {indexFile ? (
-            <iframe
-              title="Preview do site CBDAS"
-              src={indexFile.publicUrl}
-              className="h-[620px] w-full bg-white"
-            />
-          ) : (
-            <div className="p-6 text-sm font-medium text-red-700">
-              O arquivo index.html não foi encontrado no build sincronizado.
-            </div>
-          )}
+          <iframe
+            title="Preview da última versão salva no editor"
+            src={savedPreviewUrl}
+            className="h-[620px] w-full bg-white"
+          />
         </div>
 
         <aside className="grid content-start gap-4">
@@ -152,7 +146,6 @@ export default async function PublicacaoPage() {
     | {
         exportZip: ExportZipInfo;
         htmlFiles: SiteDistFile[];
-        indexFile: SiteDistFile | undefined;
         manifest: SiteDistManifest;
       }
     | undefined;
@@ -167,7 +160,6 @@ export default async function PublicacaoPage() {
     contentData = {
       exportZip,
       htmlFiles: manifest.files.filter((file) => file.extension === ".html"),
-      indexFile: manifest.files.find((file) => file.relativePath === "index.html"),
       manifest,
     };
   } catch (error) {

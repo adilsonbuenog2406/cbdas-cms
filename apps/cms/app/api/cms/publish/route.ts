@@ -4,6 +4,7 @@ import { DeploymentError } from "@/server/publishing/types";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const maxDuration = 300;
 
 export async function POST() {
   if (!(await isCmsAuthenticated())) {
@@ -14,6 +15,7 @@ export async function POST() {
     const record = await createDeployment("cms-admin");
 
     return Response.json({
+      deployment: record,
       deploymentId: record.id,
       status: record.status,
     });

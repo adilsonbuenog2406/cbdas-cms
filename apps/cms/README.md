@@ -41,4 +41,7 @@ Preferir `SFTP_PRIVATE_KEY`. Use `SFTP_PASSWORD` apenas quando chave privada nã
 
 ## Produção
 
-O fluxo SFTP é uma tarefa longa e requer servidor Node persistente com filesystem gravável para `data/deployments`. Em Vercel/serverless, use um worker persistente externo para executar a publicação.
+Em servidor Node persistente, a publicação roda em background e mantém histórico/lock em `data/deployments`.
+Em Vercel/serverless, a publicação roda inline dentro da request para não depender de worker persistente, usa `/tmp` para histórico/lock efêmeros e o endpoint define `maxDuration = 300`.
+
+Use `CMS_PUBLISH_EXECUTION_MODE=background` somente quando o runtime tiver um worker/processo persistente. Use `CMS_DEPLOYMENTS_DIR` para apontar o histórico de publicação para outro diretório gravável.

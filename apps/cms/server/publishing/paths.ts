@@ -3,7 +3,14 @@ import path from "node:path";
 
 export const cmsRoot = process.cwd();
 export const dataDir = path.resolve(cmsRoot, "data");
-export const deploymentsDir = path.join(dataDir, "deployments");
+
+const deploymentStateRoot = process.env.CMS_DEPLOYMENTS_DIR
+  ? path.resolve(process.env.CMS_DEPLOYMENTS_DIR)
+  : process.env.VERCEL
+    ? path.join(os.tmpdir(), "cbdas-deployments")
+    : path.join(dataDir, "deployments");
+
+export const deploymentsDir = deploymentStateRoot;
 export const deploymentRecordsDir = path.join(deploymentsDir, "records");
 export const deploymentLockPath = path.join(deploymentsDir, "publish.lock.json");
 export const savedProjectPath = path.join(dataDir, "landing.grapes.json");

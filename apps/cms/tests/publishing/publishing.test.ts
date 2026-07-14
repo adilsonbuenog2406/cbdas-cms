@@ -20,6 +20,7 @@ import {
 } from "../../server/publishing/sftp-publisher";
 import { injectDeploymentMeta, writePublishedLandingIndex } from "../../server/publishing/build-release";
 import { validateRelease } from "../../server/publishing/validate-release";
+import { shouldExecuteDeploymentInline } from "../../server/publishing/publisher";
 import { DeploymentError } from "../../server/publishing/types";
 
 async function withTempDir(run: (dir: string) => Promise<void>) {
@@ -53,6 +54,32 @@ test("bloqueia host SFTP com protocolo FTP", () => {
 test("bloqueia porta FTP para publicacao SFTP", () => {
   assert.throws(() => validateSftpPort(21), DeploymentError);
   assert.equal(validateSftpPort(65002), 65002);
+});
+
+test("executa publicacao inline em Vercel para evitar background serverless", () => {
+  const previousVercel = process.env.VERCEL;
+  const previousMode = process.env.CMS_PUBLISH_EXECUTION_MODE;
+
+  try {
+    process.env.VERCEL = "1";
+    delete process.env.CMS_PUBLISH_EXECUTION_MODE;
+    assert.equal(shouldExecuteDeploymentInline(), true);
+
+    process.env.CMS_PUBLISH_EXECUTION_MODE = "background";
+    assert.equal(shouldExecuteDeploymentInline(), false);
+  } finally {
+    if (previousVercel === undefined) {
+      delete process.env.VERCEL;
+    } else {
+      process.env.VERCEL = previousVercel;
+    }
+
+    if (previousMode === undefined) {
+      delete process.env.CMS_PUBLISH_EXECUTION_MODE;
+    } else {
+      process.env.CMS_PUBLISH_EXECUTION_MODE = previousMode;
+    }
+  }
 });
 
 test("resolve public_html para layout de dominios da Hostinger", async () => {

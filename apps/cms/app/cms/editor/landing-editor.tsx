@@ -2131,6 +2131,7 @@ export default function LandingEditor({
               const publishPayload = (await publishResponse.json().catch(() => ({}))) as {
                 deploymentId?: unknown;
                 error?: unknown;
+                status?: unknown;
               };
 
               if (!publishResponse.ok || typeof publishPayload.deploymentId !== "string") {
@@ -2142,7 +2143,13 @@ export default function LandingEditor({
                 return;
               }
 
-              setStatus(`Publicacao iniciada: ${publishPayload.deploymentId}`);
+              setStatus(
+                publishPayload.status === "published"
+                  ? `Publicacao concluida: ${publishPayload.deploymentId}`
+                  : publishPayload.status === "failed" || publishPayload.status === "rolled_back"
+                    ? `Publicacao finalizada com falha: ${publishPayload.deploymentId}`
+                    : `Publicacao iniciada: ${publishPayload.deploymentId}`,
+              );
               window.open("/cms/publicacao", "_blank", "noopener,noreferrer");
             } catch {
               setStatus("Nao foi possivel iniciar a publicacao SFTP.");

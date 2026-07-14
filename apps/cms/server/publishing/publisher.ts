@@ -50,17 +50,19 @@ function getSafeErrorMessage(error: unknown) {
   return "Falha desconhecida durante a publicação.";
 }
 
-function assertPublishRuntime() {
-  if (process.env.VERCEL && process.env.SFTP_ALLOW_SERVERLESS_PUBLISH !== "1") {
-    throw new DeploymentError(
-      "SFTP_CONFIGURATION_INVALID",
-      "Publicação SFTP longa não deve executar em Vercel/serverless sem worker persistente.",
-    );
+export function shouldExecuteDeploymentInline() {
+  if (process.env.CMS_PUBLISH_EXECUTION_MODE === "inline") {
+    return true;
   }
+
+  if (process.env.CMS_PUBLISH_EXECUTION_MODE === "background") {
+    return false;
+  }
+
+  return Boolean(process.env.VERCEL);
 }
 
 export async function createDeployment(userId: string) {
-  assertPublishRuntime();
   const config = getSftpPublishConfig();
   const deploymentId = randomUUID();
   const lock = await acquireDeploymentLock(deploymentId);
@@ -79,6 +81,12 @@ export async function createDeployment(userId: string) {
   });
 
   await saveDeploymentRecord(record);
+
+  if (shouldExecuteDeploymentInline()) {
+    await executeDeployment(deploymentId).catch(() => {});
+    return (await getDeploymentRecord(deploymentId)) ?? record;
+  }
+
   void executeDeployment(deploymentId).catch(async (error) => {
     await failDeploymentRecord(deploymentId, getErrorCode(error), getSafeErrorMessage(error));
     await releaseDeploymentLock(deploymentId);

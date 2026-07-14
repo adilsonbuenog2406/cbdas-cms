@@ -195,6 +195,7 @@ export default function PublishPanel({ initialDeployments }: PublishPanelProps) 
       await refreshRootSession();
       const response = await fetch("/api/cms/publish", { method: "POST" });
       const payload = (await response.json().catch(() => ({}))) as {
+        deployment?: DeploymentRecord;
         deploymentId?: string;
         error?: string;
       };
@@ -206,7 +207,19 @@ export default function PublishPanel({ initialDeployments }: PublishPanelProps) 
 
       setActiveDeploymentId(payload.deploymentId);
       setIsConfirming(false);
-      await refreshHistory();
+
+      if (payload.deployment) {
+        setDeployments((currentDeployments) =>
+          [
+            payload.deployment as DeploymentRecord,
+            ...currentDeployments.filter(
+              (deployment) => deployment.id !== payload.deployment?.id,
+            ),
+          ].sort((first, second) => second.startedAt.localeCompare(first.startedAt)),
+        );
+      } else {
+        await refreshHistory();
+      }
     } finally {
       setIsStarting(false);
     }

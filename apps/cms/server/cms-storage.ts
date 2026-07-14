@@ -9,6 +9,7 @@ function getStorageBucket() {
   return getEnvValue("CMS_SUPABASE_BUCKET") ?? getEnvValue("SUPABASE_STORAGE_BUCKET") ?? "cms";
 }
 const storageRoot = "cbdas";
+const editorDocumentKey = "landing";
 const savedProjectObjectPath = `${storageRoot}/landing.grapes.json`;
 const publishedLandingObjectPath = `${storageRoot}/landing.html`;
 const uploadsObjectPrefix = `${storageRoot}/uploads`;
@@ -24,6 +25,15 @@ type SaveLandingInput = {
 type StoredAsset = {
   body: Buffer;
   contentType: string;
+};
+
+type CmsEditorCurrentRow = {
+  html: string;
+  css: string;
+  mode: string | null;
+  site_css_href: string | null;
+  rendered_html: string;
+  updated_at: string | null;
 };
 
 let cachedSupabase: SupabaseClient | null | undefined;
@@ -161,31 +171,159 @@ async function downloadObject(supabase: SupabaseClient, objectPath: string) {
   return Buffer.from(await data.arrayBuffer());
 }
 
+function getSupabaseErrorCode(error: unknown) {
+  return typeof error === "object" && error && "code" in error ? String(error.code) : "";
+}
+
+function getSupabaseErrorMessage(error: unknown) {
+  return typeof error === "object" && error && "message" in error ? String(error.message) : "";
+}
+
+function isMissingCmsDatabaseSchema(error: unknown) {
+  const code = getSupabaseErrorCode(error);
+  const message = getSupabaseErrorMessage(error);
+
+  return (
+    code === "42P01" ||
+    code === "PGRST205" ||
+    /cms_editor_(current|revisions)|schema cache|does not exist/i.test(message)
+  );
+}
+
+function getLandingMode(mode: unknown) {
+  return typeof mode === "string" && mode.trim() ? mode : "original-site";
+}
+
+function toProjectJson(row: Pick<CmsEditorCurrentRow, "html" | "css" | "mode" | "site_css_href" | "updated_at">) {
+  return JSON.stringify(
+    {
+      html: row.html,
+      css: row.css,
+      mode: row.mode ?? "original-site",
+      siteCssHref: row.site_css_href ?? undefined,
+      updatedAt: row.updated_at ?? undefined,
+    },
+    null,
+    2,
+  );
+}
+
+function toProjectJsonFromInput(input: SaveLandingInput, updatedAt: string) {
+  return JSON.stringify(
+    {
+      html: input.html,
+      css: input.css,
+      mode: getLandingMode(input.mode),
+      siteCssHref: input.siteCssHref,
+      updatedAt,
+    },
+    null,
+    2,
+  );
+}
+
+async function saveLandingToDatabase(supabase: SupabaseClient, input: SaveLandingInput) {
+  const mode = getLandingMode(input.mode);
+  const savedBy = "cms-admin";
+
+  const { data: revision, error: revisionError } = await supabase
+    .from("cms_editor_revisions")
+    .insert({
+      document_key: editorDocumentKey,
+      html: input.html,
+      css: input.css,
+      mode,
+      site_css_href: input.siteCssHref ?? null,
+      rendered_html: input.renderedHtml,
+      saved_by: savedBy,
+    })
+    .select("id, created_at")
+    .single();
+
+  if (revisionError) {
+    if (isMissingCmsDatabaseSchema(revisionError)) {
+      return false;
+    }
+
+    throw revisionError;
+  }
+
+  const updatedAt = typeof revision.created_at === "string" ? revision.created_at : new Date().toISOString();
+  const { error: currentError } = await supabase.from("cms_editor_current").upsert(
+    {
+      document_key: editorDocumentKey,
+      html: input.html,
+      css: input.css,
+      mode,
+      site_css_href: input.siteCssHref ?? null,
+      rendered_html: input.renderedHtml,
+      last_revision_id: revision.id,
+      updated_at: updatedAt,
+    },
+    {
+      onConflict: "document_key",
+    },
+  );
+
+  if (currentError) {
+    if (isMissingCmsDatabaseSchema(currentError)) {
+      return false;
+    }
+
+    throw currentError;
+  }
+
+  return true;
+}
+
+async function readCurrentLandingFromDatabase(supabase: SupabaseClient) {
+  const { data, error } = await supabase
+    .from("cms_editor_current")
+    .select("html, css, mode, site_css_href, rendered_html, updated_at")
+    .eq("document_key", editorDocumentKey)
+    .maybeSingle<CmsEditorCurrentRow>();
+
+  if (error) {
+    if (isMissingCmsDatabaseSchema(error)) {
+      return null;
+    }
+
+    throw error;
+  }
+
+  return data;
+}
+
+async function saveLandingToObjectStorage(supabase: SupabaseClient, input: SaveLandingInput, projectJson: string) {
+  await Promise.all([
+    uploadTextObject(supabase, savedProjectObjectPath, projectJson, "application/json; charset=utf-8"),
+    uploadTextObject(supabase, publishedLandingObjectPath, input.renderedHtml, "text/html; charset=utf-8"),
+  ]);
+}
+
 export function hasPersistentCmsStorage() {
   return Boolean(getSupabaseAdmin());
 }
 
 export async function saveLanding(input: SaveLandingInput) {
   const supabase = getSupabaseAdmin();
-  const projectJson = JSON.stringify(
-    {
-      html: input.html,
-      css: input.css,
-      mode: input.mode,
-      siteCssHref: input.siteCssHref,
-      updatedAt: new Date().toISOString(),
-    },
-    null,
-    2,
-  );
 
   if (supabase) {
-    await Promise.all([
-      uploadTextObject(supabase, savedProjectObjectPath, projectJson, "application/json; charset=utf-8"),
-      uploadTextObject(supabase, publishedLandingObjectPath, input.renderedHtml, "text/html; charset=utf-8"),
-    ]);
+    const savedToDatabase = await saveLandingToDatabase(supabase, input);
+
+    if (savedToDatabase) {
+      return;
+    }
+
+    await saveLandingToObjectStorage(
+      supabase,
+      input,
+      toProjectJsonFromInput(input, new Date().toISOString()),
+    );
     return;
   }
+
+  const projectJson = toProjectJsonFromInput(input, new Date().toISOString());
 
   await mkdir(dataDir, { recursive: true });
   await Promise.all([
@@ -198,6 +336,12 @@ export async function readSavedProjectJson() {
   const supabase = getSupabaseAdmin();
 
   if (supabase) {
+    const currentLanding = await readCurrentLandingFromDatabase(supabase);
+
+    if (currentLanding) {
+      return toProjectJson(currentLanding);
+    }
+
     return (await downloadObject(supabase, savedProjectObjectPath)).toString("utf8");
   }
 
@@ -208,6 +352,12 @@ export async function readPublishedLandingHtml() {
   const supabase = getSupabaseAdmin();
 
   if (supabase) {
+    const currentLanding = await readCurrentLandingFromDatabase(supabase);
+
+    if (currentLanding) {
+      return currentLanding.rendered_html;
+    }
+
     return (await downloadObject(supabase, publishedLandingObjectPath)).toString("utf8");
   }
 

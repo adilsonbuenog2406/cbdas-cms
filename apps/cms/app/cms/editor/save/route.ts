@@ -1,6 +1,5 @@
-import { mkdir, writeFile } from "node:fs/promises";
 import { cookies } from "next/headers";
-import { dataDir, publishedLandingPath, savedProjectPath } from "@/server/publishing/paths";
+import { saveLanding } from "@/server/cms-storage";
 
 const sessionCookieName = "cms_session";
 
@@ -66,32 +65,20 @@ export async function POST(request: Request) {
       : undefined;
 
   try {
-    await mkdir(dataDir, { recursive: true });
-    await Promise.all([
-      writeFile(
-        savedProjectPath,
-        JSON.stringify(
-          {
-            html: payload.html,
-            css: payload.css,
-            mode: payload.mode,
-            siteCssHref,
-            updatedAt: new Date().toISOString(),
-          },
-          null,
-          2,
-        ),
-        "utf8",
-      ),
-      writeFile(publishedLandingPath, renderDocument(payload.html, payload.css, siteCssHref), "utf8"),
-    ]);
+    await saveLanding({
+      html: payload.html,
+      css: payload.css,
+      mode: payload.mode,
+      siteCssHref,
+      renderedHtml: renderDocument(payload.html, payload.css, siteCssHref),
+    });
   } catch (error) {
     console.error("CMS_SAVE_FAILED", error);
 
     return Response.json(
       {
         error:
-          "Nao foi possivel salvar no filesystem do CMS. Verifique permissao de escrita na pasta data.",
+          "Nao foi possivel salvar a versao do site. Verifique a configuracao do storage do CMS.",
       },
       { status: 500 },
     );

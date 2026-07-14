@@ -3,6 +3,7 @@ import path from "node:path";
 import { redirect } from "next/navigation";
 import { isCmsAuthenticated } from "../_lib/auth";
 import LandingEditor from "./landing-editor";
+import { readSavedProjectJson } from "@/server/cms-storage";
 
 const siteIndexPath = path.resolve(process.cwd(), "public/site-dist/index.html");
 const siteAssetsPath = path.resolve(process.cwd(), "public/site-dist/assets");
@@ -214,6 +215,31 @@ function getInitialHtml() {
 </div>`;
 }
 
+type SavedEditorProject = {
+  html: string;
+  css: string;
+};
+
+async function getSavedEditorProject(): Promise<SavedEditorProject | null> {
+  try {
+    const project = JSON.parse(await readSavedProjectJson()) as {
+      html?: unknown;
+      css?: unknown;
+    };
+
+    if (typeof project.html === "string" && typeof project.css === "string") {
+      return {
+        html: project.html,
+        css: project.css,
+      };
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
 export const dynamic = "force-dynamic";
 
 export default async function EditorPage() {
@@ -221,11 +247,13 @@ export default async function EditorPage() {
     redirect("/cms");
   }
 
-  const [assets, snapshotSourceHtml] = await Promise.all([getSiteAssets(), getSnapshotSourceHtml()]);
+  const [assets, savedProject] = await Promise.all([getSiteAssets(), getSavedEditorProject()]);
+  const snapshotSourceHtml = savedProject ? "" : await getSnapshotSourceHtml();
 
   return (
     <LandingEditor
-      initialHtml={getInitialHtml()}
+      initialHtml={savedProject?.html ?? getInitialHtml()}
+      initialCss={savedProject?.css ?? ""}
       siteCssHref={assets.cssHref}
       shortcutsBackgroundHref={assets.shortcutsBackgroundHref}
       snapshotSourceHtml={snapshotSourceHtml}

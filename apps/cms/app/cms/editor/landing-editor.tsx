@@ -6,6 +6,7 @@ import type { Asset, Component, Editor } from "grapesjs";
 
 type LandingEditorProps = {
   initialHtml: string;
+  initialCss: string;
   siteCssHref: string;
   shortcutsBackgroundHref: string;
   snapshotSourceHtml: string;
@@ -1729,6 +1730,7 @@ function registerDeleteComponentCommand(editor: Editor) {
 
 export default function LandingEditor({
   initialHtml,
+  initialCss,
   siteCssHref,
   shortcutsBackgroundHref,
   snapshotSourceHtml,
@@ -1767,7 +1769,7 @@ export default function LandingEditor({
         return;
       }
 
-      const handleContextMenu = (event: MouseEvent) => {
+      const openImageUploadPopup = (event: MouseEvent) => {
         const target = event.target;
 
         if (!(target instanceof HTMLElement)) {
@@ -1784,20 +1786,23 @@ export default function LandingEditor({
 
         event.preventDefault();
         event.stopPropagation();
+        event.stopImmediatePropagation();
         imageContextTargetRef.current = imageComponent;
         editor.select(imageComponent);
         setImageContextMenu({
           x: Math.min(window.innerWidth - 260, frameRect.left + event.clientX),
           y: Math.min(window.innerHeight - 170, frameRect.top + event.clientY),
-          mode: "menu",
+          mode: "upload",
           isUploading: false,
           error: "",
         });
       };
 
-      canvasDocument.addEventListener("contextmenu", handleContextMenu);
+      canvasDocument.addEventListener("contextmenu", openImageUploadPopup);
+      canvasDocument.addEventListener("dblclick", openImageUploadPopup, true);
       imageContextCleanupRef.current = () => {
-        canvasDocument.removeEventListener("contextmenu", handleContextMenu);
+        canvasDocument.removeEventListener("contextmenu", openImageUploadPopup);
+        canvasDocument.removeEventListener("dblclick", openImageUploadPopup, true);
       };
     },
     [],
@@ -1954,7 +1959,7 @@ export default function LandingEditor({
         width: "100%",
         fromElement: false,
         components: initialHtml,
-        style: "",
+        style: initialCss,
         storageManager: false,
         plugins: [presetWebpage],
         canvas: {
@@ -1979,6 +1984,7 @@ export default function LandingEditor({
       registerDeleteComponentCommand(editor);
       editor.on("canvas:load", () => installImageContextMenuRef.current(editor));
       editor.setComponents(initialHtml);
+      editor.setStyle(initialCss);
       configureProgramScheduleComponents(editor);
       configureHeaderMenuComponents(editor);
       configureSpeakerComponents(editor);
@@ -2013,7 +2019,11 @@ export default function LandingEditor({
       };
 
       window.addEventListener("message", handleSnapshot);
-      setShouldLoadSnapshotSource(true);
+      if (snapshotSourceHtml) {
+        setShouldLoadSnapshotSource(true);
+      } else {
+        snapshotAppliedRef.current = true;
+      }
 
       editor.BlockManager.add("cbdas-hero", {
         label: "Hero CBDAS",
@@ -2054,20 +2064,50 @@ export default function LandingEditor({
         },
       });
 
+      const saveCurrentEditor = async () => {
+        const project = {
+          html: editor.getHtml(),
+          css: editor.getCss(),
+          siteCssHref,
+          mode: "original-site",
+        };
+
+        window.localStorage.setItem(draftKey, JSON.stringify(project));
+
+        const response = await fetch("/cms/editor/save", {
+          method: "POST",
+          credentials: "same-origin",
+          headers: {
+            "content-type": "application/json",
+          },
+          body: JSON.stringify(project),
+        });
+        const payload = (await response.json().catch(() => ({}))) as { error?: unknown };
+
+        if (!response.ok) {
+          throw new Error(
+            typeof payload.error === "string"
+              ? payload.error
+              : "Nao foi possivel salvar a versao do site.",
+          );
+        }
+      };
+
       editor.Panels.addButton("options", [
         {
           id: "save-draft",
           className: "fa fa-save",
           label: "Salvar",
-          command: () => {
-            window.localStorage.setItem(
-              draftKey,
-              JSON.stringify({
-                html: editor.getHtml(),
-                css: editor.getCss(),
-              }),
-            );
-            setStatus("Rascunho salvo neste navegador.");
+          command: async () => {
+            try {
+              setStatus("Salvando versao do site...");
+              await saveCurrentEditor();
+              setStatus("Versao do site salva e pronta para publicar.");
+            } catch (error) {
+              setStatus(
+                error instanceof Error ? error.message : "Nao foi possivel salvar a versao do site.",
+              );
+            }
           },
         },
         {
@@ -2076,6 +2116,8 @@ export default function LandingEditor({
           label: "Publicar",
           command: async () => {
             try {
+              setStatus("Salvando versao do site antes de publicar...");
+              await saveCurrentEditor();
               setStatus("Iniciando publicacao SFTP...");
               await fetch("/cms/session/refresh", {
                 method: "POST",
@@ -2118,7 +2160,7 @@ export default function LandingEditor({
             configureHeaderMenuComponents(editor);
             configureSpeakerComponents(editor);
             configurePanelistComponents(editor);
-            editor.setStyle("");
+            editor.setStyle(initialCss);
             setStatus("Rascunho limpo.");
           },
         },
@@ -2136,7 +2178,7 @@ export default function LandingEditor({
       });
 
       editorRef.current = editor;
-      setStatus("Editor pronto com o site original.");
+      setStatus(snapshotSourceHtml ? "Editor pronto com o site original." : "Editor pronto com a versao salva.");
 
       editor.on("destroy", () => {
         window.removeEventListener("message", handleSnapshot);
@@ -2165,7 +2207,7 @@ export default function LandingEditor({
       editorRef.current?.destroy();
       editorRef.current = null;
     };
-  }, [applySnapshotClone, initialHtml, siteCssHref, shortcutsBackgroundHref]);
+  }, [applySnapshotClone, initialCss, initialHtml, siteCssHref, shortcutsBackgroundHref, snapshotSourceHtml]);
 
   return (
     <main className="flex h-screen min-h-0 flex-col bg-[#101827] text-white">
@@ -2186,7 +2228,7 @@ export default function LandingEditor({
           </Link>
         </div>
       </header>
-      {shouldLoadSnapshotSource ? (
+      {shouldLoadSnapshotSource && snapshotSourceHtml ? (
         <iframe
           ref={snapshotSourceFrameRef}
           aria-hidden="true"

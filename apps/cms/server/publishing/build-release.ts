@@ -1,6 +1,12 @@
 import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { getDeploymentTmpDir, publishedLandingPath, siteDistPublicDir, uploadsDir } from "./paths";
+import {
+  copyLocalUploadsToDirectory,
+  copyStoredUploadsToDirectory,
+  hasPersistentCmsStorage,
+  readPublishedLandingHtml,
+} from "../cms-storage";
+import { getDeploymentTmpDir, siteDistPublicDir } from "./paths";
 import { createDeploymentManifest } from "./create-manifest";
 import { validateRelease } from "./validate-release";
 import { DeploymentError } from "./types";
@@ -26,12 +32,14 @@ export function injectDeploymentMeta(html: string, deploymentId: string) {
 export async function writePublishedLandingIndex(
   releaseIndexPath: string,
   deploymentId: string,
-  landingPath = publishedLandingPath,
+  landingPath?: string,
 ) {
   let publishedLandingHtml: string;
 
   try {
-    publishedLandingHtml = await readFile(landingPath, "utf8");
+    publishedLandingHtml = landingPath
+      ? await readFile(landingPath, "utf8")
+      : await readPublishedLandingHtml();
   } catch {
     throw new DeploymentError(
       "RELEASE_BUILD_FAILED",
@@ -76,10 +84,12 @@ export async function buildRelease(deploymentId: string) {
 
   await writePublishedLandingIndex(releaseIndexPath, deploymentId);
 
-  await cp(uploadsDir, path.join(releaseDir, "uploads"), {
-    recursive: true,
-    force: true,
-  }).catch(() => {});
+  await mkdir(path.join(releaseDir, "uploads"), { recursive: true });
+  await copyLocalUploadsToDirectory(path.join(releaseDir, "uploads"));
+
+  if (hasPersistentCmsStorage()) {
+    await copyStoredUploadsToDirectory(path.join(releaseDir, "uploads"));
+  }
 
   const { manifest, manifestHash } = await createDeploymentManifest(releaseDir, deploymentId);
   await validateRelease(releaseDir, manifest);

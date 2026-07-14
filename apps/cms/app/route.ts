@@ -1,12 +1,12 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+import { readPublishedLandingHtml } from "@/server/cms-storage";
 
 const siteDistDir = path.resolve(process.cwd(), "public/site-dist");
-const publishedLandingPath = path.resolve(process.cwd(), "data/landing.html");
 
 async function renderSiteHtml() {
   try {
-    return await readFile(publishedLandingPath, "utf8");
+    return await readPublishedLandingHtml();
   } catch {
     return (await readFile(path.join(siteDistDir, "index.html"), "utf8"))
       .replaceAll('src="./assets/', 'src="/assets/')

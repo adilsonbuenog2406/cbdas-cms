@@ -1,31 +1,8 @@
-import { mkdir, writeFile } from "node:fs/promises";
-import path from "node:path";
-import { randomUUID } from "node:crypto";
 import { cookies } from "next/headers";
+import { uploadEditorImage } from "@/server/cms-storage";
 
 const sessionCookieName = "cms_session";
-const uploadDir = path.resolve(process.cwd(), "data/uploads");
 const maxUploadBytes = 12 * 1024 * 1024;
-
-const extensionByMimeType: Record<string, string> = {
-  "image/gif": ".gif",
-  "image/jpeg": ".jpg",
-  "image/png": ".png",
-  "image/svg+xml": ".svg",
-  "image/webp": ".webp",
-};
-
-function getSafeExtension(file: File) {
-  const mimeExtension = extensionByMimeType[file.type];
-
-  if (mimeExtension) {
-    return mimeExtension;
-  }
-
-  const nameExtension = path.extname(file.name).toLowerCase();
-
-  return Object.values(extensionByMimeType).includes(nameExtension) ? nameExtension : "";
-}
 
 export async function POST(request: Request) {
   const cookieStore = await cookies();
@@ -45,20 +22,23 @@ export async function POST(request: Request) {
     return Response.json({ error: "A imagem deve ter no maximo 12 MB." }, { status: 413 });
   }
 
-  const extension = getSafeExtension(file);
+  let src: string;
 
-  if (!extension) {
-    return Response.json({ error: "Formato de imagem nao suportado." }, { status: 400 });
+  try {
+    src = await uploadEditorImage(file);
+  } catch (error) {
+    const message =
+      error instanceof Error && error.message ? error.message : "Nao foi possivel enviar a imagem.";
+
+    return Response.json(
+      {
+        error: message,
+      },
+      { status: message.includes("Formato de imagem") ? 400 : 500 },
+    );
   }
 
-  const fileName = `${Date.now()}-${randomUUID()}${extension}`;
-  const filePath = path.join(uploadDir, fileName);
-  const buffer = Buffer.from(await file.arrayBuffer());
-
-  await mkdir(uploadDir, { recursive: true });
-  await writeFile(filePath, buffer);
-
   return Response.json({
-    src: `/uploads/${fileName}`,
+    src,
   });
 }

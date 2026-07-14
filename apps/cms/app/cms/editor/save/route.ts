@@ -1,11 +1,11 @@
 import { mkdir, writeFile } from "node:fs/promises";
-import path from "node:path";
 import { cookies } from "next/headers";
+import { dataDir, publishedLandingPath, savedProjectPath } from "@/server/publishing/paths";
 
 const sessionCookieName = "cms_session";
-const dataDir = path.resolve(process.cwd(), "data");
-const savedProjectPath = path.join(dataDir, "landing.grapes.json");
-const publishedLandingPath = path.join(dataDir, "landing.html");
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 function renderDocument(html: string, css: string, siteCssHref?: string) {
   const siteStylesheet = siteCssHref
@@ -43,12 +43,18 @@ export async function POST(request: Request) {
     path: "/",
   });
 
-  const payload = (await request.json()) as {
+  let payload: {
     html?: unknown;
     css?: unknown;
     mode?: unknown;
     siteCssHref?: unknown;
   };
+
+  try {
+    payload = (await request.json()) as typeof payload;
+  } catch {
+    return Response.json({ error: "Payload JSON invalido." }, { status: 400 });
+  }
 
   if (typeof payload.html !== "string" || typeof payload.css !== "string") {
     return Response.json({ error: "Invalid editor payload" }, { status: 400 });
@@ -59,25 +65,37 @@ export async function POST(request: Request) {
       ? payload.siteCssHref
       : undefined;
 
-  await mkdir(dataDir, { recursive: true });
-  await Promise.all([
-    writeFile(
-      savedProjectPath,
-      JSON.stringify(
-        {
-          html: payload.html,
-          css: payload.css,
-          mode: payload.mode,
-          siteCssHref,
-          updatedAt: new Date().toISOString(),
-        },
-        null,
-        2,
+  try {
+    await mkdir(dataDir, { recursive: true });
+    await Promise.all([
+      writeFile(
+        savedProjectPath,
+        JSON.stringify(
+          {
+            html: payload.html,
+            css: payload.css,
+            mode: payload.mode,
+            siteCssHref,
+            updatedAt: new Date().toISOString(),
+          },
+          null,
+          2,
+        ),
+        "utf8",
       ),
-      "utf8",
-    ),
-    writeFile(publishedLandingPath, renderDocument(payload.html, payload.css, siteCssHref), "utf8"),
-  ]);
+      writeFile(publishedLandingPath, renderDocument(payload.html, payload.css, siteCssHref), "utf8"),
+    ]);
+  } catch (error) {
+    console.error("CMS_SAVE_FAILED", error);
+
+    return Response.json(
+      {
+        error:
+          "Nao foi possivel salvar no filesystem do CMS. Verifique permissao de escrita na pasta data.",
+      },
+      { status: 500 },
+    );
+  }
 
   return Response.json({ ok: true });
 }

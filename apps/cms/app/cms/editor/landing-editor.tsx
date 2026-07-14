@@ -2075,46 +2075,59 @@ export default function LandingEditor({
           className: "fa fa-upload",
           label: "Publicar",
           command: async () => {
-            setStatus("Salvando alteracoes antes de publicar...");
+            try {
+              setStatus("Salvando alteracoes antes de publicar...");
 
-            const saveResponse = await fetch("/cms/editor/save", {
-              method: "POST",
-              headers: {
-                "content-type": "application/json",
-              },
-              body: JSON.stringify({
-                html: editor.getHtml(),
-                css: editor.getCss(),
-                siteCssHref,
-                mode: "original-site",
-              }),
-            });
+              const saveResponse = await fetch("/cms/editor/save", {
+                method: "POST",
+                credentials: "same-origin",
+                headers: {
+                  "content-type": "application/json",
+                },
+                body: JSON.stringify({
+                  html: editor.getHtml(),
+                  css: editor.getCss(),
+                  siteCssHref,
+                  mode: "original-site",
+                }),
+              });
+              const savePayload = (await saveResponse.json().catch(() => ({}))) as {
+                error?: unknown;
+              };
 
-            if (!saveResponse.ok) {
+              if (!saveResponse.ok) {
+                setStatus(
+                  typeof savePayload.error === "string"
+                    ? savePayload.error
+                    : "Nao foi possivel salvar antes da publicacao.",
+                );
+                return;
+              }
+
+              setStatus("Iniciando publicacao SFTP...");
+              const publishResponse = await fetch("/api/cms/publish", {
+                method: "POST",
+                credentials: "same-origin",
+              });
+              const publishPayload = (await publishResponse.json().catch(() => ({}))) as {
+                deploymentId?: unknown;
+                error?: unknown;
+              };
+
+              if (!publishResponse.ok || typeof publishPayload.deploymentId !== "string") {
+                setStatus(
+                  typeof publishPayload.error === "string"
+                    ? publishPayload.error
+                    : "Nao foi possivel iniciar a publicacao SFTP.",
+                );
+                return;
+              }
+
+              setStatus(`Publicacao iniciada: ${publishPayload.deploymentId}`);
+              window.open("/cms/publicacao", "_blank", "noopener,noreferrer");
+            } catch {
               setStatus("Nao foi possivel salvar antes da publicacao.");
-              return;
             }
-
-            setStatus("Iniciando publicacao SFTP...");
-            const publishResponse = await fetch("/api/cms/publish", {
-              method: "POST",
-            });
-            const publishPayload = (await publishResponse.json().catch(() => ({}))) as {
-              deploymentId?: unknown;
-              error?: unknown;
-            };
-
-            if (!publishResponse.ok || typeof publishPayload.deploymentId !== "string") {
-              setStatus(
-                typeof publishPayload.error === "string"
-                  ? publishPayload.error
-                  : "Nao foi possivel iniciar a publicacao SFTP.",
-              );
-              return;
-            }
-
-            setStatus(`Publicacao iniciada: ${publishPayload.deploymentId}`);
-            window.open("/cms/publicacao", "_blank", "noopener,noreferrer");
           },
         },
         {

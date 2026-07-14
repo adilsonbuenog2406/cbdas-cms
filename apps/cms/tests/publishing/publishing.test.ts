@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
@@ -18,7 +18,7 @@ import {
   resolvePublishRemotePath,
   selectReusableBackupPath,
 } from "../../server/publishing/sftp-publisher";
-import { injectDeploymentMeta } from "../../server/publishing/build-release";
+import { injectDeploymentMeta, writePublishedLandingIndex } from "../../server/publishing/build-release";
 import { validateRelease } from "../../server/publishing/validate-release";
 import { DeploymentError } from "../../server/publishing/types";
 
@@ -144,6 +144,46 @@ test("preserva o index do site-dist e injeta apenas o deployment id", () => {
   assert.match(html, /href="\.\/assets\/index-test\.css"/);
   assert.doesNotMatch(html, /cms-published-runtime-style/);
   assert.doesNotMatch(html, /cms-published-runtime-script/);
+});
+
+test("usa a landing salva como index da release", async () => {
+  await withTempDir(async (dir) => {
+    const releaseIndexPath = path.join(dir, "index.html");
+    const publishedLandingPath = path.join(dir, "landing.html");
+
+    await writeFile(
+      releaseIndexPath,
+      `<!doctype html><html><head></head><body><div id="root">site-dist antigo</div></body></html>`,
+      "utf8",
+    );
+    await writeFile(
+      publishedLandingPath,
+      `<!doctype html><html><head></head><body><main>landing salva</main></body></html>`,
+      "utf8",
+    );
+
+    await writePublishedLandingIndex(releaseIndexPath, "deployment-test", publishedLandingPath);
+
+    const html = await readFile(releaseIndexPath, "utf8");
+
+    assert.match(html, /landing salva/);
+    assert.match(html, /cms-deployment-id/);
+    assert.doesNotMatch(html, /site-dist antigo/);
+  });
+});
+
+test("bloqueia publicacao quando nao ha landing salva", async () => {
+  await withTempDir(async (dir) => {
+    await assert.rejects(
+      () =>
+        writePublishedLandingIndex(
+          path.join(dir, "index.html"),
+          "deployment-test",
+          path.join(dir, "missing-landing.html"),
+        ),
+      DeploymentError,
+    );
+  });
 });
 
 test("cria manifesto com sha256 e tamanhos", async () => {

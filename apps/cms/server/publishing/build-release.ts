@@ -1,6 +1,6 @@
 import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { getDeploymentTmpDir, siteDistPublicDir, uploadsDir } from "./paths";
+import { getDeploymentTmpDir, publishedLandingPath, siteDistPublicDir, uploadsDir } from "./paths";
 import { createDeploymentManifest } from "./create-manifest";
 import { validateRelease } from "./validate-release";
 import { DeploymentError } from "./types";
@@ -21,6 +21,25 @@ export function injectDeploymentMeta(html: string, deploymentId: string) {
         `    ${deploymentMeta}\n  </head>`,
       )
     : `${deploymentMeta}\n${html}`;
+}
+
+export async function writePublishedLandingIndex(
+  releaseIndexPath: string,
+  deploymentId: string,
+  landingPath = publishedLandingPath,
+) {
+  let publishedLandingHtml: string;
+
+  try {
+    publishedLandingHtml = await readFile(landingPath, "utf8");
+  } catch {
+    throw new DeploymentError(
+      "RELEASE_BUILD_FAILED",
+      "Nenhuma landing salva foi encontrada. Salve pelo editor antes de publicar.",
+    );
+  }
+
+  await writeFile(releaseIndexPath, injectDeploymentMeta(publishedLandingHtml, deploymentId), "utf8");
 }
 
 export async function buildRelease(deploymentId: string) {
@@ -45,10 +64,9 @@ export async function buildRelease(deploymentId: string) {
   }
 
   const releaseIndexPath = path.join(releaseDir, "index.html");
-  let siteIndexHtml: string;
 
   try {
-    siteIndexHtml = await readFile(releaseIndexPath, "utf8");
+    await readFile(releaseIndexPath, "utf8");
   } catch {
     throw new DeploymentError(
       "RELEASE_BUILD_FAILED",
@@ -56,7 +74,7 @@ export async function buildRelease(deploymentId: string) {
     );
   }
 
-  await writeFile(releaseIndexPath, injectDeploymentMeta(siteIndexHtml, deploymentId), "utf8");
+  await writePublishedLandingIndex(releaseIndexPath, deploymentId);
 
   await cp(uploadsDir, path.join(releaseDir, "uploads"), {
     recursive: true,

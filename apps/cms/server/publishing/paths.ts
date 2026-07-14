@@ -6,6 +6,7 @@ export const dataDir = path.resolve(cmsRoot, "data");
 export const deploymentsDir = path.join(dataDir, "deployments");
 export const deploymentRecordsDir = path.join(deploymentsDir, "records");
 export const deploymentLockPath = path.join(deploymentsDir, "publish.lock.json");
+export const savedProjectPath = path.join(dataDir, "landing.grapes.json");
 export const publishedLandingPath = path.join(dataDir, "landing.html");
 export const siteDistPublicDir = path.join(cmsRoot, "public/site-dist");
 export const uploadsDir = path.join(dataDir, "uploads");

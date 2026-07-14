@@ -2072,8 +2072,6 @@ export default function LandingEditor({
           mode: "original-site",
         };
 
-        window.localStorage.setItem(draftKey, JSON.stringify(project));
-
         const response = await fetch("/cms/editor/save", {
           method: "POST",
           credentials: "same-origin",
@@ -2091,6 +2089,8 @@ export default function LandingEditor({
               : "Nao foi possivel salvar a versao do site.",
           );
         }
+
+        window.localStorage.removeItem(draftKey);
       };
 
       editor.Panels.addButton("options", [
@@ -2108,6 +2108,14 @@ export default function LandingEditor({
                 error instanceof Error ? error.message : "Nao foi possivel salvar a versao do site.",
               );
             }
+          },
+        },
+        {
+          id: "preview-saved-page",
+          className: "fa fa-eye",
+          label: "Preview",
+          command: () => {
+            window.open("/cms/preview", "_blank", "noopener,noreferrer");
           },
         },
         {
@@ -2168,20 +2176,13 @@ export default function LandingEditor({
             configureSpeakerComponents(editor);
             configurePanelistComponents(editor);
             editor.setStyle(initialCss);
-            setStatus("Rascunho limpo.");
+            setStatus("Editor restaurado para a ultima versao carregada. Clique em Salvar para persistir.");
           },
         },
       ]);
 
       editor.on("update", () => {
-        window.localStorage.setItem(
-          draftKey,
-          JSON.stringify({
-            html: editor.getHtml(),
-            css: editor.getCss(),
-          }),
-        );
-        setStatus("Alteracoes salvas automaticamente neste navegador.");
+        setStatus("Alteracoes pendentes. Clique em Salvar para persistir e liberar para preview/publicacao.");
       });
 
       editorRef.current = editor;

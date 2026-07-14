@@ -18,7 +18,9 @@ pnpm build:cms
 
 ## Publicação SFTP
 
-O botão `Publicar` usa a última versão salva em `apps/cms/data/landing.html` e publica por SFTP com release temporária, validação, backup, ativação e rollback automático.
+O botão `Publicar` usa a última versão salva pelo editor e publica por SFTP com release temporária, validação, backup, ativação e rollback automático.
+
+Em produção/serverless, configure Supabase para persistir a versão salva. Sem Supabase, o CMS só usa arquivos locais para desenvolvimento ou servidores Node com disco persistente.
 
 Configure as variáveis abaixo somente no ambiente server-side do CMS:
 
@@ -35,9 +37,25 @@ PUBLIC_LANDING_PAGE_URL=https://idasan.com.br/iii-congresso-brasileiro-de-direit
 SFTP_CONNECTION_TIMEOUT=30000
 SFTP_READY_TIMEOUT=30000
 SFTP_KEEP_BACKUPS=3
+NEXT_PUBLIC_SUPABASE_URL=
+SUPABASE_SERVICE_ROLE_KEY=
+CMS_SUPABASE_BUCKET=cms
+CMS_REQUIRE_PERSISTENT_STORAGE=true
 ```
 
 Preferir `SFTP_PRIVATE_KEY`. Use `SFTP_PASSWORD` apenas quando chave privada não estiver disponível. Nunca use prefixo `NEXT_PUBLIC_` para credenciais.
+
+Rode a migration em `supabase/migrations/20260714132843_cms_editor_persistence.sql` no projeto Supabase. Ela cria:
+
+- `cms_editor_current`: versão atual usada por `/cms/editor`, `/cms/preview` e publicação SFTP.
+- `cms_editor_revisions`: histórico de cada clique em `Salvar`.
+- bucket privado `cms` para fallback de storage e uploads.
+
+`SUPABASE_SERVICE_ROLE_KEY` deve ficar somente no ambiente server-side do CMS. Nunca use `NEXT_PUBLIC_` nessa chave.
+
+## Preview
+
+Depois de salvar no editor, acesse `/cms/preview` para ver a última versão persistida. É essa mesma versão que será publicada pelo SFTP.
 
 ## Produção
 

@@ -305,6 +305,10 @@ export function hasPersistentCmsStorage() {
   return Boolean(getSupabaseAdmin());
 }
 
+function requiresPersistentCmsStorage() {
+  return process.env.CMS_REQUIRE_PERSISTENT_STORAGE === "true" || Boolean(process.env.VERCEL);
+}
+
 export async function saveLanding(input: SaveLandingInput) {
   const supabase = getSupabaseAdmin();
 
@@ -321,6 +325,12 @@ export async function saveLanding(input: SaveLandingInput) {
       toProjectJsonFromInput(input, new Date().toISOString()),
     );
     return;
+  }
+
+  if (requiresPersistentCmsStorage()) {
+    throw new Error(
+      "CMS persistent storage is not configured. Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.",
+    );
   }
 
   const projectJson = toProjectJsonFromInput(input, new Date().toISOString());
